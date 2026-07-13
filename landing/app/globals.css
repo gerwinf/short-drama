@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette (Kilig — see Documentation/Product Spec.md §2.2) */
+  --color-plum: #1e0e24;
+  --color-plum-800: #2b1533;
+  --color-plum-700: #3a1c46;
+  --color-rose: #ff3d68;
+  --color-rose-600: #e62e57;
+  --color-gold: #ffb627;
+  --color-coral: #ff7a59;
+  --color-violet: #7b4bff;
+  --color-cream: #fff6f2;
+  --color-fog: #c9b8cf;
+  --color-ink: #120814;
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-jakarta);
+}
+
+:root {
+  --background: #1e0e24;
+  --foreground: #fff6f2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Signature "Kilig Glow" gradient */
+.kilig-glow-text {
+  background: linear-gradient(100deg, #ff3d68 0%, #ff7a59 45%, #ffb627 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.kilig-glow-bg {
+  background: linear-gradient(100deg, #ff3d68 0%, #ff7a59 50%, #ffb627 100%);
+}
+
+.kilig-cta-shadow {
+  box-shadow:
+    0 10px 30px -8px rgba(255, 61, 104, 0.55),
+    0 0 0 1px rgba(255, 122, 89, 0.25) inset;
+}
+
+.phone-shadow {
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.7),
+    0 0 60px -20px rgba(255, 61, 104, 0.35);
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
