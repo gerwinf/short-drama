@@ -142,3 +142,15 @@ export async function getEvents(): Promise<TrackEvent[]> {
   if (DATABASE_URL) return pgGetEvents();
   return readLines<TrackEvent>(EVENTS_FILE);
 }
+
+// Wipe all submissions + events (test-data reset before launch). Destructive.
+export async function clearAll(): Promise<void> {
+  if (DATABASE_URL) {
+    const sql = await getSql();
+    await sql`TRUNCATE submissions`;
+    await sql`TRUNCATE events`;
+    return;
+  }
+  await fs.rm(SUBMISSIONS_FILE, { force: true });
+  await fs.rm(EVENTS_FILE, { force: true });
+}
