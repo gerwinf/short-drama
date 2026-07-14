@@ -62,6 +62,31 @@ export function LoginForm() {
   );
 }
 
+export function ResetButton() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      disabled={busy}
+      onClick={async () => {
+        if (
+          !confirm(
+            "Delete ALL submissions and events? This clears test data and cannot be undone.",
+          )
+        )
+          return;
+        setBusy(true);
+        await fetch("/api/dashboard/reset", { method: "POST" });
+        setBusy(false);
+        router.refresh();
+      }}
+      className="rounded-full border border-rose/40 px-4 py-2 text-sm text-fog hover:text-rose disabled:opacity-60"
+    >
+      {busy ? "Clearing…" : "Reset data"}
+    </button>
+  );
+}
+
 export function LogoutButton() {
   const router = useRouter();
   return (

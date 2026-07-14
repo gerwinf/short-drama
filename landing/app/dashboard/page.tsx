@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { isValidToken, DASH_COOKIE } from "@/lib/auth";
 import { getSubmissions, getEvents } from "@/lib/store";
 import { QUESTIONS, labelFor, type Submission } from "@/lib/types";
-import { LoginForm, LogoutButton } from "./dashboard-client";
+import { LoginForm, LogoutButton, ResetButton } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
 
@@ -105,7 +105,10 @@ export default async function Dashboard() {
               Validation dashboard
             </h1>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-2">
+            <ResetButton />
+            <LogoutButton />
+          </div>
         </div>
 
         {/* Funnel */}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Track from "./track";
 import SignupForm from "./signup-form";
+import ClipGallery from "./clip-gallery";
 
 const FEATURES = [
   {
@@ -40,11 +41,17 @@ const FEATURES = [
   },
 ];
 
-const VIBES = [
-  "Rich Boy Next Door",
-  "Amnesia Twist",
-  "Enemies-to-Lovers",
-  "Cinderella Teleserye",
+const VIBE_CLIPS = [
+  { slug: "rich-boy", label: "Rich Boy Next Door" },
+  { slug: "amnesia", label: "Amnesia Twist" },
+  { slug: "enemies", label: "Enemies-to-Lovers" },
+  { slug: "cinderella", label: "Cinderella Teleserye" },
+];
+
+const APP_CLIPS = [
+  { slug: "app-onboarding", label: "Pumili ng kilig" },
+  { slug: "app-feed", label: "Ang home feed" },
+  { slug: "app-series", label: "Series + Team vote" },
 ];
 
 function PhoneShot({
@@ -196,27 +203,27 @@ export default function Home() {
               Choose your first kilig
             </h2>
             <p className="mt-3 text-fog">
-              Anong type mong kilig? May kwentong para sa’yo.
+              Anong type mong kilig? Pindutin para sa lasa ng bawat kwento. 👇
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {VIBES.map((v) => (
-                <span
-                  key={v}
-                  className="rounded-full border border-rose/40 bg-plum px-4 py-2 text-sm text-cream"
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
           </div>
-          <div className="mt-10 grid grid-cols-3 gap-4 md:mx-auto md:max-w-2xl">
-            <PhoneShot
-              src="/shots/01-onboarding-choose-your-kilig.jpg"
-              alt="Onboarding"
-            />
-            <PhoneShot src="/shots/05-home-feed.jpg" alt="Home feed" />
-            <PhoneShot src="/shots/06-series-detail.jpg" alt="Series detail" />
+          <div className="mt-8 md:mx-auto md:max-w-3xl">
+            <ClipGallery items={VIBE_CLIPS} layout="grid" />
           </div>
+        </div>
+      </section>
+
+      {/* App in motion */}
+      <section className="relative z-10 mx-auto max-w-6xl px-5 pb-4 pt-2 md:pb-10">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-display text-3xl font-semibold text-cream md:text-4xl">
+            Tingnan ang app sa aksyon
+          </h2>
+          <p className="mt-3 text-fog">
+            Hindi lang cinematic — buhay na buhay ang app. Pindutin para makita. 👇
+          </p>
+        </div>
+        <div className="mt-8 md:mx-auto md:max-w-3xl">
+          <ClipGallery items={APP_CLIPS} layout="carousel" />
         </div>
       </section>
 
