@@ -3,19 +3,18 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-type Vibe = { slug: string; label: string };
+export type Clip = { slug: string; label: string };
 
-const VIBES: Vibe[] = [
-  { slug: "rich-boy", label: "Rich Boy Next Door" },
-  { slug: "amnesia", label: "Amnesia Twist" },
-  { slug: "enemies", label: "Enemies-to-Lovers" },
-  { slug: "cinderella", label: "Cinderella Teleserye" },
-];
-
-// Tap a vibe to play a cinematic taste of that drama in a lightbox.
-// Videos load only on click, so there is no page-load cost.
-export default function VibeGallery() {
-  const [active, setActive] = useState<Vibe | null>(null);
+// Reusable click-to-play gallery. Cards show a poster; tapping one opens a
+// lightbox that plays the compressed clip. Videos load only on click.
+export default function ClipGallery({
+  items,
+  layout = "grid",
+}: {
+  items: Clip[];
+  layout?: "grid" | "carousel";
+}) {
+  const [active, setActive] = useState<Clip | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = active ? "hidden" : "";
@@ -29,33 +28,43 @@ export default function VibeGallery() {
     };
   }, [active]);
 
+  const container =
+    layout === "carousel"
+      ? "flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible"
+      : "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4";
+  const item =
+    layout === "carousel"
+      ? "snap-start shrink-0 basis-[64%] sm:basis-[42%] md:basis-auto"
+      : "";
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-        {VIBES.map((v) => (
-          <button
-            key={v.slug}
-            onClick={() => setActive(v)}
-            aria-label={`Panoorin: ${v.label}`}
-            className="group relative aspect-[9/16] overflow-hidden rounded-2xl border border-plum-700"
-          >
-            <Image
-              src={`/clips/${v.slug}.jpg`}
-              alt={v.label}
-              fill
-              sizes="(max-width: 768px) 45vw, 22vw"
-              className="object-cover transition duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
-            <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-rose/90 shadow-lg transition group-hover:scale-110">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="white" aria-hidden>
-                <path d="M4 2.5v11l9-5.5-9-5.5z" />
-              </svg>
-            </span>
-            <span className="absolute inset-x-0 bottom-0 p-3 text-left text-sm font-semibold leading-tight text-cream">
-              {v.label}
-            </span>
-          </button>
+      <div className={container}>
+        {items.map((v) => (
+          <div key={v.slug} className={item}>
+            <button
+              onClick={() => setActive(v)}
+              aria-label={`Panoorin: ${v.label}`}
+              className="group relative block aspect-[9/16] w-full overflow-hidden rounded-2xl border border-plum-700"
+            >
+              <Image
+                src={`/clips/${v.slug}.jpg`}
+                alt={v.label}
+                fill
+                sizes="(max-width: 768px) 60vw, 24vw"
+                className="object-cover transition duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+              <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-rose/90 shadow-lg transition group-hover:scale-110">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="white" aria-hidden>
+                  <path d="M4 2.5v11l9-5.5-9-5.5z" />
+                </svg>
+              </span>
+              <span className="absolute inset-x-0 bottom-0 p-3 text-left text-sm font-semibold leading-tight text-cream">
+                {v.label}
+              </span>
+            </button>
+          </div>
         ))}
       </div>
 
