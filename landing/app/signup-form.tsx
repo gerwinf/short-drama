@@ -45,6 +45,15 @@ export default function SignupForm() {
     return () => document.removeEventListener("click", handler);
   }, [openModal]);
 
+  // Auto-open the form when linked directly, e.g. kilig.nueve.club/?signup=1
+  // (also accepts #signup). Useful for the FB Page CTA button and ad links.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("signup") === "1" || window.location.hash === "#signup") {
+      openModal();
+    }
+  }, [openModal]);
+
   // Lock body scroll while the modal is open.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
