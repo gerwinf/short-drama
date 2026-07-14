@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { isValidToken, DASH_COOKIE } from "@/lib/auth";
 import { getSubmissions } from "@/lib/store";
-import { QUESTIONS } from "@/lib/types";
+import { ALL_QUESTIONS } from "@/lib/types";
 
 function csvCell(v: string): string {
   const s = v ?? "";
@@ -16,12 +16,13 @@ export async function GET() {
   }
 
   const subs = await getSubmissions();
-  const questionIds = QUESTIONS.map((q) => q.id);
+  const questionIds = ALL_QUESTIONS.map((q) => q.id);
   const header = [
     "id",
     "timestamp",
     "email",
     ...questionIds,
+    "form_version",
     "utm_source",
     "utm_medium",
     "utm_campaign",
@@ -36,6 +37,7 @@ export async function GET() {
       s.ts,
       s.email,
       ...questionIds.map((q) => s.answers?.[q] ?? ""),
+      s.answers?.form_version ?? "",
       s.utm?.utm_source ?? "",
       s.utm?.utm_medium ?? "",
       s.utm?.utm_campaign ?? "",

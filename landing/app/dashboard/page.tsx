@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { isValidToken, DASH_COOKIE } from "@/lib/auth";
 import { getSubmissions, getEvents } from "@/lib/store";
-import { QUESTIONS, labelFor, type Submission } from "@/lib/types";
+import { QUESTIONS, VERDICTS, labelFor, type Submission } from "@/lib/types";
 import { LoginForm, LogoutButton, ResetButton } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
@@ -147,6 +147,20 @@ export default async function Dashboard() {
             />
           ))}
           <Breakdown title="Ad source (utm_source)" total={signups} rows={utmRows} />
+          {/* Vibe-matched verdicts: each respondent answers only the dilemma
+              for the vibe they picked, so totals are per-verdict, not global. */}
+          {Object.values(VERDICTS).map((q) => {
+            const answered = subs.filter((s) => s.answers[q.id]);
+            if (answered.length === 0) return null;
+            return (
+              <Breakdown
+                key={q.id}
+                title={q.title}
+                total={answered.length}
+                rows={countBy(answered, (s) => labelFor(q.id, s.answers[q.id]))}
+              />
+            );
+          })}
         </div>
 
         {/* Raw submissions */}
@@ -172,6 +186,7 @@ export default async function Dashboard() {
                     {q.id}
                   </th>
                 ))}
+                <th className="px-4 py-3 font-medium">Verdict</th>
                 <th className="px-4 py-3 font-medium">Source</th>
               </tr>
             </thead>
@@ -191,6 +206,18 @@ export default async function Dashboard() {
                     </td>
                   ))}
                   <td className="px-4 py-3 text-fog">
+                    {(() => {
+                      // Show the verdict matching their vibe (falls back to any
+                      // answered verdict for back-navigation edge cases).
+                      const q =
+                        (s.answers.vibe && VERDICTS[s.answers.vibe]) ||
+                        Object.values(VERDICTS).find((v) => s.answers[v.id]);
+                      return q && s.answers[q.id]
+                        ? labelFor(q.id, s.answers[q.id])
+                        : "—";
+                    })()}
+                  </td>
+                  <td className="px-4 py-3 text-fog">
                     {s.utm.utm_source || "direct"}
                   </td>
                 </tr>
@@ -198,7 +225,7 @@ export default async function Dashboard() {
               {recent.length === 0 && (
                 <tr>
                   <td
-                    colSpan={QUESTIONS.length + 3}
+                    colSpan={QUESTIONS.length + 4}
                     className="px-4 py-8 text-center text-fog/60"
                   >
                     No submissions yet. Share the landing page to start

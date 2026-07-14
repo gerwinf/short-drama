@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FORM_VERSION, QUESTIONS } from "@/lib/types";
+import { FORM_VERSION, QUESTIONS, VERDICTS, type Question } from "@/lib/types";
 import { readUtm } from "@/lib/utm";
 import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
-const TOTAL_STEPS = QUESTIONS.length + 1; // questions + email
+const TOTAL_STEPS = QUESTIONS.length + 2; // questions + vibe-matched verdict + email
 
 export default function SignupForm() {
   const [open, setOpen] = useState(false);
@@ -98,7 +98,13 @@ export default function SignupForm() {
   if (!open) return null;
 
   const progress = done ? 100 : Math.round((step / TOTAL_STEPS) * 100);
-  const isEmailStep = step === QUESTIONS.length;
+  const isEmailStep = step === TOTAL_STEPS - 1;
+  // The verdict step continues the story of whichever vibe they picked.
+  const currentQuestion: Question | null = isEmailStep
+    ? null
+    : step < QUESTIONS.length
+      ? QUESTIONS[step]
+      : (VERDICTS[answers.vibe] ?? VERDICTS.kabit);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center">
@@ -171,10 +177,10 @@ export default function SignupForm() {
             </div>
           ) : (
             <Step
-              key={QUESTIONS[step].id}
-              qIndex={step}
+              key={currentQuestion!.id}
+              q={currentQuestion!}
               onChoose={chooseOption}
-              selected={answers[QUESTIONS[step].id]}
+              selected={answers[currentQuestion!.id]}
             />
           )}
         </div>
@@ -196,15 +202,14 @@ export default function SignupForm() {
 }
 
 function Step({
-  qIndex,
+  q,
   onChoose,
   selected,
 }: {
-  qIndex: number;
+  q: Question;
   onChoose: (qId: string, value: string) => void;
   selected?: string;
 }) {
-  const q = QUESTIONS[qIndex];
   return (
     <div>
       <h2 className="font-display text-2xl font-semibold text-cream">

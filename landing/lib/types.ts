@@ -175,7 +175,7 @@ export type TrackEvent = {
 
 // Human-readable labels for the dashboard.
 export function labelFor(questionId: string, value: string): string {
-  const q = QUESTIONS.find((q) => q.id === questionId);
+  const q = ALL_QUESTIONS.find((q) => q.id === questionId);
   const opt = q?.options.find((o) => o.value === value);
   return opt?.label ?? value;
 }
