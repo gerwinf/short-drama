@@ -16,14 +16,34 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kilig.nueve.club"),
+  applicationName: "Kilig",
   title: "Kilig — Ikaw ang bida sa sariling teleserye",
   description:
-    "Interactive Filipino short dramas. Teleserye × telenovela × K-drama. You make the choices, you get the kilig. Join the early access list.",
+    "Interactive Filipino short dramas — teleserye × telenovela × K-drama. Ikaw ang pipili ng mangyayari. Ikaw ang kikilig. Join the early access list.",
+  keywords: [
+    "Kilig",
+    "Filipino short drama",
+    "interactive drama",
+    "teleserye",
+    "telenovela",
+    "K-drama",
+    "Pinoy",
+  ],
   openGraph: {
     title: "Kilig — Ikaw ang bida sa sariling teleserye",
     description:
-      "Interactive Filipino short dramas where YOU decide the story. Join early access.",
+      "Interactive Filipino short dramas where YOU decide the story. Teleserye × telenovela × K-drama. Join early access.",
+    url: "https://kilig.nueve.club",
+    siteName: "Kilig",
+    locale: "en_PH",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kilig — Ikaw ang bida sa sariling teleserye",
+    description:
+      "Interactive Filipino short dramas where YOU decide the story. Join early access.",
   },
 };
 
