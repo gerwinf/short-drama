@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { QUESTIONS } from "@/lib/types";
+import { FORM_VERSION, QUESTIONS } from "@/lib/types";
 import { readUtm } from "@/lib/utm";
 import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
@@ -78,7 +78,11 @@ export default function SignupForm() {
       const res = await fetch("/api/submit", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ answers, email: email.trim(), utm: readUtm() }),
+        body: JSON.stringify({
+          answers: { ...answers, form_version: FORM_VERSION },
+          email: email.trim(),
+          utm: readUtm(),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || "failed");
@@ -238,6 +242,26 @@ function Step({
 }
 
 function Success({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function share() {
+    const url = window.location.origin;
+    const text = "Ikaw ang bida sa sariling teleserye. Sali ka na sa Kilig! 💖";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Kilig", text, url });
+        return;
+      } catch {
+        // user cancelled — fall through to copy
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  }
+
   return (
     <div className="text-center">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-full kilig-glow-bg text-3xl">
@@ -251,9 +275,14 @@ function Success({ email }: { email: string }) {
         <span className="text-cream">{email}</span> pag-launch ng Kilig.
       </p>
       <p className="mt-6 text-sm text-fog">
-        Gusto mong mauna ang barkada mo? I-share ang{" "}
-        <span className="text-rose">kilig.app</span> 👀
+        Gusto mong mauna ang barkada mo? I-share mo na 👀
       </p>
+      <button
+        onClick={share}
+        className="mt-3 rounded-full border border-rose/60 px-6 py-3 text-sm font-semibold text-rose transition hover:bg-rose/10 active:scale-[0.98]"
+      >
+        {copied ? "Na-copy ang link! ✅" : "I-share sa barkada 💌"}
+      </button>
     </div>
   );
 }
