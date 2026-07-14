@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Track from "./track";
 import SignupForm from "./signup-form";
+import VibeGallery from "./vibe-gallery";
 
 const FEATURES = [
   {
@@ -38,13 +39,6 @@ const FEATURES = [
     headline: "Feel every giddy moment.",
     body: "Real-time na meter na pumipatak sa bawat kilig na eksena. Pag sumabog sa max, alam mo na — grabe ’yon. Screenshot-worthy, screen-record-worthy.",
   },
-];
-
-const VIBES = [
-  "Rich Boy Next Door",
-  "Amnesia Twist",
-  "Enemies-to-Lovers",
-  "Cinderella Teleserye",
 ];
 
 function PhoneShot({
@@ -196,20 +190,13 @@ export default function Home() {
               Choose your first kilig
             </h2>
             <p className="mt-3 text-fog">
-              Anong type mong kilig? May kwentong para sa’yo.
+              Anong type mong kilig? Pindutin para sa lasa ng bawat kwento. 👇
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {VIBES.map((v) => (
-                <span
-                  key={v}
-                  className="rounded-full border border-rose/40 bg-plum px-4 py-2 text-sm text-cream"
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
           </div>
-          <div className="mt-10 grid grid-cols-3 gap-4 md:mx-auto md:max-w-2xl">
+          <div className="mt-8 md:mx-auto md:max-w-3xl">
+            <VibeGallery />
+          </div>
+          <div className="mt-8 grid grid-cols-3 gap-4 md:mx-auto md:max-w-2xl">
             <PhoneShot
               src="/shots/01-onboarding-choose-your-kilig.jpg"
               alt="Onboarding"
