@@ -50,6 +50,9 @@ async function getSql(): Promise<NeonQueryFunction<false, false>> {
         utm jsonb NOT NULL DEFAULT '{}'::jsonb,
         user_agent text
       )`;
+      // Per-step diagnostics (step/close/submit_error) ride a jsonb `meta`
+      // column added to the existing events table — idempotent, no migration.
+      await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS meta jsonb NOT NULL DEFAULT '{}'::jsonb`;
     })();
   }
   await tablesReady;
@@ -79,19 +82,20 @@ async function pgGetSubmissions(): Promise<Submission[]> {
 
 async function pgSaveEvent(e: TrackEvent): Promise<void> {
   const sql = await getSql();
-  await sql`INSERT INTO events (id, ts, type, utm, user_agent)
-    VALUES (${e.id}, ${e.ts}, ${e.type}, ${JSON.stringify(e.utm)}::jsonb, ${e.userAgent ?? null})
+  await sql`INSERT INTO events (id, ts, type, meta, utm, user_agent)
+    VALUES (${e.id}, ${e.ts}, ${e.type}, ${JSON.stringify(e.meta ?? {})}::jsonb, ${JSON.stringify(e.utm)}::jsonb, ${e.userAgent ?? null})
     ON CONFLICT (id) DO NOTHING`;
 }
 
 async function pgGetEvents(): Promise<TrackEvent[]> {
   const sql = await getSql();
-  const rows = await sql`SELECT id, ts, type, utm, user_agent
+  const rows = await sql`SELECT id, ts, type, meta, utm, user_agent
     FROM events ORDER BY ts ASC`;
   return rows.map((r) => ({
     id: r.id as string,
     ts: new Date(r.ts as string).toISOString(),
     type: r.type as TrackEvent["type"],
+    meta: (r.meta ?? undefined) as TrackEvent["meta"],
     utm: (r.utm ?? {}) as TrackEvent["utm"],
     userAgent: (r.user_agent as string) ?? undefined,
   }));

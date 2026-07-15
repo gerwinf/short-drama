@@ -164,11 +164,27 @@ export type Submission = {
   userAgent?: string;
 };
 
-// Lightweight funnel events (page view, form open) — powers conversion rate.
+// Lightweight funnel events — powers conversion rate + per-step drop-off.
+//   view         — page visit (once/session)
+//   open         — quiz modal opened (once/session)
+//   step         — a quiz question was answered (meta.step / meta.questionId / meta.value)
+//   close        — modal closed before finishing (meta.step = step abandoned on)
+//   submit_error — email submit reached the server but failed (meta.reason).
+//                  Critical: distinguishes a goal-line bug from real abandonment.
+export type TrackEventType = "view" | "open" | "step" | "close" | "submit_error";
+
+export type TrackEventMeta = {
+  step?: number; // 1-based step index
+  questionId?: string; // question answered / step context
+  value?: string; // chosen option value
+  reason?: string; // submit_error detail
+};
+
 export type TrackEvent = {
   id: string;
   ts: string;
-  type: "view" | "open";
+  type: TrackEventType;
+  meta?: TrackEventMeta;
   utm: UtmData;
   userAgent?: string;
 };

@@ -66,6 +66,51 @@ function Breakdown({
   );
 }
 
+// Per-step quiz funnel: each row is "reached this step". The drop between
+// consecutive rows is abandonment at that step — pinpoints the real cliff.
+function StepFunnel({ rows }: { rows: { label: string; count: number }[] }) {
+  const base = rows[0]?.count || 0;
+  return (
+    <div className="rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
+      <p className="text-sm font-semibold text-cream">Quiz step drop-off</p>
+      <p className="mt-1 text-xs text-fog/70">
+        Reached each step, as % of form opens. Red = people lost vs. the previous
+        step.
+      </p>
+      <div className="mt-3 flex flex-col gap-2">
+        {rows.map((r, i) => {
+          const prev = i > 0 ? rows[i - 1].count : r.count;
+          const dropped = prev - r.count;
+          return (
+            <div key={r.label}>
+              <div className="flex justify-between text-sm text-fog">
+                <span>{r.label}</span>
+                <span className="text-cream">
+                  {r.count} · {pct(r.count, base)}
+                  {i > 0 && dropped > 0 && (
+                    <span className="ml-2 text-rose">−{dropped}</span>
+                  )}
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-plum">
+                <div
+                  className="kilig-glow-bg h-full rounded-full"
+                  style={{ width: base ? `${(r.count / base) * 100}%` : "0%" }}
+                />
+              </div>
+            </div>
+          );
+        })}
+        {base === 0 && (
+          <p className="text-sm text-fog/60">
+            No step data yet — ships with the next deploy.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function countBy(subs: Submission[], key: (s: Submission) => string) {
   const map = new Map<string, number>();
   for (const s of subs) {
@@ -91,6 +136,25 @@ export default async function Dashboard() {
   const views = events.filter((e) => e.type === "view").length;
   const opens = events.filter((e) => e.type === "open").length;
   const signups = subs.length;
+
+  // Per-step funnel from "step" events (one per answered question). Verdict
+  // steps share a prefix; group them into a single step-6 row.
+  const stepEvents = events.filter((e) => e.type === "step");
+  const answeredCount = (qId: string) =>
+    stepEvents.filter((e) => e.meta?.questionId === qId).length;
+  const verdictReached = stepEvents.filter((e) =>
+    e.meta?.questionId?.startsWith("verdict"),
+  ).length;
+  const submitErrors = events.filter((e) => e.type === "submit_error").length;
+  const stepRows = [
+    { label: "Form opens", count: opens },
+    ...QUESTIONS.map((q, i) => ({
+      label: `${i + 1}. ${q.id}`,
+      count: answeredCount(q.id),
+    })),
+    { label: `${QUESTIONS.length + 1}. verdict`, count: verdictReached },
+    { label: `${QUESTIONS.length + 2}. email → signup`, count: signups },
+  ];
 
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const recent = [...subs].reverse();
@@ -128,6 +192,18 @@ export default async function Dashboard() {
             label="Conversion"
             value={pct(signups, views)}
             hint="signups ÷ visits"
+          />
+        </div>
+
+        {/* Per-step drop-off + goal-line failures */}
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="md:col-span-2">
+            <StepFunnel rows={stepRows} />
+          </div>
+          <StatCard
+            label="Submit errors"
+            value={submitErrors}
+            hint="reached email, submit failed — a bug, not abandonment"
           />
         </div>
 

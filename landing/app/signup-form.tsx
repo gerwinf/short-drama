@@ -7,6 +7,17 @@ import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
 const TOTAL_STEPS = QUESTIONS.length + 2; // questions + vibe-matched verdict + email
 
+// Fire-and-forget funnel event. keepalive lets it survive an unloading page
+// (e.g. the "close" event when the user dismisses the modal or leaves).
+function track(type: string, meta?: Record<string, unknown>) {
+  fetch("/api/track", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ type, meta, utm: readUtm() }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 export default function SignupForm() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -22,12 +33,7 @@ export default function SignupForm() {
     if (!openTracked.current) {
       openTracked.current = true;
       fbqCustom("FormOpen"); // Meta custom event: funnel step
-      fetch("/api/track", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ type: "open", utm: readUtm() }),
-        keepalive: true,
-      }).catch(() => {});
+      track("open");
     }
   }, []);
 
@@ -64,7 +70,16 @@ export default function SignupForm() {
 
   function chooseOption(qId: string, value: string) {
     setAnswers((a) => ({ ...a, [qId]: value }));
+    // Per-step funnel event: which question was answered, and the pick. The
+    // drop between consecutive questions === abandonment at that step.
+    track("step", { step: step + 1, questionId: qId, value });
     setStep((s) => s + 1);
+  }
+
+  // Closing before the success screen is an abandonment — record the step.
+  function closeModal() {
+    if (!done) track("close", { step: step + 1 });
+    setOpen(false);
   }
 
   async function submit() {
@@ -88,7 +103,10 @@ export default function SignupForm() {
       if (!res.ok || !data.ok) throw new Error(data.error || "failed");
       fbqTrack("Lead"); // Meta standard conversion event — optimize ads on this
       setDone(true);
-    } catch {
+    } catch (e) {
+      // Goal-line failure: the user WANTED in but the submit failed. Tracked
+      // separately so it never hides inside the abandonment count.
+      track("submit_error", { reason: (e as Error)?.message?.slice(0, 120) });
       setError("May problema sa pag-submit. Pakisubukan ulit.");
     } finally {
       setSubmitting(false);
@@ -116,7 +134,7 @@ export default function SignupForm() {
           </span>
           <button
             aria-label="Isara"
-            onClick={() => setOpen(false)}
+            onClick={closeModal}
             className="grid h-9 w-9 place-items-center rounded-full border border-plum-700 text-fog hover:text-cream"
           >
             ✕
