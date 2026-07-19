@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   applicationName: "Kilig",
   title: "Kilig — Ikaw ang bida sa sariling teleserye",
   description:
-    "Interactive Filipino short dramas — teleserye × telenovela × K-drama. Ikaw ang pipili ng mangyayari. Ikaw ang kikilig. Join the early access list.",
+    "Interactive Filipino short dramas — teleserye × telenovela × K-drama. Ikaw ang pipili ng mangyayari. Promise, kikiligin ka. Join the early access list.",
   keywords: [
     "Kilig",
     "Filipino short drama",

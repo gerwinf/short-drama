@@ -163,10 +163,10 @@ export default function SignupForm() {
           ) : isEmailStep ? (
             <div>
               <h2 className="font-display text-2xl font-semibold text-cream">
-                Where do we send your early access?
+                Saan namin ise-send ang early access mo?
               </h2>
               <p className="mt-2 text-sm text-fog">
-                Ilalagay ka namin sa unang batch pag-launch. Walang spam, pinky
+                Ilalagay ka namin sa pioneer batch pag-launch. Walang spam, pinky
                 promise. 🤙
               </p>
               <input
@@ -291,10 +291,10 @@ function Success({ email }: { email: string }) {
         💖
       </div>
       <h2 className="mt-5 font-display text-3xl font-semibold text-cream">
-        You&apos;re on the list!
+        Nasa list ka na! 🎉
       </h2>
       <p className="mt-3 text-fog">
-        Salamat! Naka-reserve na ang early access mo. Aabangan mo ang email sa{" "}
+        Salamat! Naka-reserve na ang early access mo. Abangan mo ang email sa{" "}
         <span className="text-cream">{email}</span> pag-launch ng Kilig.
       </p>
       <p className="mt-6 text-sm text-fog">

@@ -9,14 +9,14 @@ const FEATURES = [
     img: "/shots/04-share-card-ikaw-ang-bida.jpg",
     title: "Ikaw ang Bida",
     headline: "I-share ang cliffhanger. Patulan ng buong FYP.",
-    body: "Bawat malaking eksena, may auto-made na share clip: “Ako, sinampal ko siya — ikaw, anong gagawin mo?” I-post sa TikTok o Reels at hayaang mag-debate ang buong barkada. Ito ang share na hindi mo mabibili — kusang kumakalat.",
+    body: "Bawat malaking eksena, may ready-to-share na clip: “Ako, sinampal ko siya — ikaw, anong gagawin mo?” I-post sa TikTok o Reels at hayaang mag-debate ang buong barkada. Ito ang share na hindi mo mabibili — kusang kumakalat.",
   },
   {
     tag: "Interactive",
     img: "/shots/03-decision-sagot-mo.jpg",
     title: "Sagot Mo",
     headline: "Ikaw ang magdedesisyon kung anong susunod.",
-    body: "Sa gitna ng kabog-dibdib na eksena, ikaw ang pipili: patawarin ba o lumakad na? May timer, may tensyon. Iba’t ibang pinili, iba’t ibang kwento — walang panonood na pareho.",
+    body: "Sa gitna ng kabog-dibdib na eksena, ikaw ang pipili: patawarin ba o lumakad na? May timer, may tensyon. Iba’t ibang pinili, iba’t ibang kwento — walang dalawang parehong panonood.",
   },
   {
     tag: "Fandom",
@@ -37,7 +37,7 @@ const FEATURES = [
     img: "/shots/02-player-kilig-meter.jpg",
     title: "Kilig Meter",
     headline: "Feel every giddy moment.",
-    body: "Real-time na meter na pumipatak sa bawat kilig na eksena. Pag sumabog sa max, alam mo na — grabe ’yon. Screenshot-worthy, screen-record-worthy.",
+    body: "Real-time na meter na pumipatak sa bawat kilig na eksena. Pag umabot sa max, alam mo na — grabe ’yon. Screenshot-worthy, screen-record-worthy.",
   },
 ];
 
@@ -113,22 +113,22 @@ export default function Home() {
       <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-5 pb-8 pt-6 md:grid-cols-2 md:pt-14">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-plum-700 bg-plum-800/60 px-4 py-1.5 text-sm text-gold">
-            🎬 Bagong app · Para sa Pinoy
+            🎬 Bagong app · Para sa mga Pinoy
           </span>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] text-cream md:text-6xl">
             Ikaw ang <span className="kilig-glow-text">bida</span> sa sariling
             teleserye.
           </h1>
           <p className="mt-5 max-w-md text-lg text-fog">
-            Interactive na short dramas na Pinoy na Pinoy — teleserye ×
-            telenovela × K-drama. Ikaw ang pipili ng mangyayari. Ikaw ang
-            kikilig.
+            Interactive short dramas na totoong Pinoy — teleserye ×
+            telenovela × K-drama. Ikaw ang pipili ng mangyayari. Promise,
+            kikiligin ka.
           </p>
           <div className="mt-8">
             <Cta>Get early access — libre 💖</Cta>
           </div>
           <p className="mt-4 text-sm text-fog/80">
-            ⚡ 30 seconds lang · Walang bayad · Mauuna ka sa launch
+            ⚡ 30 seconds lang · Libre · Mauna sa launch
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export default function Home() {
           Handa ka nang <span className="kilig-glow-text">kiligin</span>?
         </h2>
         <p className="mx-auto mt-4 max-w-md text-fog">
-          Sumali sa early access list at maging una sa unang batch ng Kilig.
+          Kunin mo na ang early access at maging kasama sa pioneer batch ng Kilig.
           Libre — 30 seconds lang.
         </p>
         <div className="mt-8">
