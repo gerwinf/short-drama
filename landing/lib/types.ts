@@ -14,28 +14,12 @@ export type Question = {
 };
 
 // NOTE: order here === order in the form. Email is a separate final step.
+// Order is deliberate: lead with the engaging, no-personal-data "pick your
+// drama" hook. Per-step tracking (2026-07-19) showed 51% of openers bailed on
+// the OLD first question (gender) — a cold demographic ask right after "Get
+// early access". Demographics (gender/age) now sit late, once the user is
+// invested. `vibe` must stay before the vibe-matched verdict step.
 export const QUESTIONS: Question[] = [
-  {
-    id: "gender",
-    title: "Ikaw ba ay...",
-    hint: "Para ma-personalize namin ang mga kwento mo.",
-    options: [
-      { value: "female", label: "Babae", sub: "Female" },
-      { value: "male", label: "Lalaki", sub: "Male" },
-      { value: "other", label: "Iba / Skip", sub: "Prefer not to say" },
-    ],
-  },
-  {
-    id: "age",
-    title: "Ilang taon ka na?",
-    options: [
-      { value: "under_18", label: "Under 18" },
-      { value: "18_24", label: "18–24" },
-      { value: "25_34", label: "25–34" },
-      { value: "35_44", label: "35–44" },
-      { value: "45_plus", label: "45+" },
-    ],
-  },
   {
     id: "vibe",
     title: "Anong klaseng kilig ang type mo?",
@@ -71,6 +55,27 @@ export const QUESTIONS: Question[] = [
       { value: "other", label: "Iba pang bansa" },
     ],
   },
+  {
+    id: "gender",
+    title: "Ikaw ay?",
+    hint: "Para ma-personalize namin ang mga kwento mo.",
+    options: [
+      { value: "female", label: "Babae", sub: "Female" },
+      { value: "male", label: "Lalaki", sub: "Male" },
+      { value: "other", label: "Iba / Skip", sub: "Prefer not to say" },
+    ],
+  },
+  {
+    id: "age",
+    title: "Ilang taon ka na?",
+    options: [
+      { value: "under_18", label: "Under 18" },
+      { value: "18_24", label: "18–24" },
+      { value: "25_34", label: "25–34" },
+      { value: "35_44", label: "35–44" },
+      { value: "45_plus", label: "45+" },
+    ],
+  },
 ];
 
 // The verdict step adapts to the vibe chosen in the `vibe` question — the form
@@ -81,9 +86,9 @@ export const VERDICTS: Record<string, Question> = {
   kabit: {
     id: "verdict_kabit",
     title: "Nahuli mong may kabit ang asawa mo. Ano'ng gagawin mo?",
-    hint: "Walang tamang sagot — sagot mo 'to. Ganito ka-drama ang Kilig. 😉",
+    hint: "Walang tamang sagot — ikaw ang bahala. Ganito ka-drama ang Kilig. 😉",
     options: [
-      { value: "harapin", label: "Harapin sila NGAYON" },
+      { value: "harapin", label: "Harapin sila ngayon" },
       { value: "ipunin", label: "Ipunin muna ang ebidensya" },
       { value: "iwan", label: "Iwan nang tahimik" },
     ],
@@ -92,9 +97,9 @@ export const VERDICTS: Record<string, Question> = {
     id: "verdict_revenge",
     title:
       "Limang taon kang inapi ng pamilyang 'yan. Ngayon, hindi ka nila nakilala. Ano'ng gagawin mo?",
-    hint: "Walang tamang sagot — sagot mo 'to. Ganito ka-drama ang Kilig. 😉",
+    hint: "Walang tamang sagot — ikaw ang bahala. Ganito ka-drama ang Kilig. 😉",
     options: [
-      { value: "magpakilala", label: "Magpakilala NA" },
+      { value: "magpakilala", label: "Magpakilala na" },
       { value: "paglaruan", label: "Paglaruan muna sila" },
       { value: "tahimik", label: "Tahimik na maghiganti" },
     ],
@@ -103,7 +108,7 @@ export const VERDICTS: Record<string, Question> = {
     id: "verdict_rich_boy",
     title:
       "Ang crush mong kapitbahay — anak pala ng bilyonaryo, at may fiancée. Ano'ng gagawin mo?",
-    hint: "Walang tamang sagot — sagot mo 'to. Ganito ka-drama ang Kilig. 😉",
+    hint: "Walang tamang sagot — ikaw ang bahala. Ganito ka-drama ang Kilig. 😉",
     options: [
       { value: "lalaban", label: "Lalaban ako para sa kanya" },
       { value: "lalayo", label: "Lalayo na ako habang maaga" },
@@ -114,7 +119,7 @@ export const VERDICTS: Record<string, Question> = {
     id: "verdict_amnesia",
     title:
       "Nawalan ng alaala ang asawa mo — kasama ang masakit niyong nakaraan. Sasabihin mo ba ang totoo?",
-    hint: "Walang tamang sagot — sagot mo 'to. Ganito ka-drama ang Kilig. 😉",
+    hint: "Walang tamang sagot — ikaw ang bahala. Ganito ka-drama ang Kilig. 😉",
     options: [
       { value: "lahat", label: "Sasabihin ko ang lahat" },
       { value: "umpisa", label: "Magsisimula kami ulit sa umpisa" },
@@ -125,7 +130,7 @@ export const VERDICTS: Record<string, Question> = {
     id: "verdict_enemies",
     title:
       "Ang kaaway mo sa opisina — siya pala ang blind date na inayos ng barkada mo. Ano'ng gagawin mo?",
-    hint: "Walang tamang sagot — sagot mo 'to. Ganito ka-drama ang Kilig. 😉",
+    hint: "Walang tamang sagot — ikaw ang bahala. Ganito ka-drama ang Kilig. 😉",
     options: [
       { value: "tuloy", label: "Tutuloy ako sa date" },
       { value: "alis", label: "Aalis ako bago niya ako makita" },
@@ -144,7 +149,7 @@ export const ALL_QUESTIONS: Question[] = [
 // Bump when QUESTIONS change so dashboard/exports can segment responses
 // across form revisions. Stored inside `answers` as `form_version` — rides
 // the existing jsonb column, no schema change.
-export const FORM_VERSION = "2026-07-14b";
+export const FORM_VERSION = "2026-07-20-vibe-first";
 
 export type UtmData = {
   utm_source?: string;
