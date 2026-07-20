@@ -2,6 +2,7 @@ import Image from "next/image";
 import Track from "./track";
 import SignupForm from "./signup-form";
 import ClipGallery from "./clip-gallery";
+import Link from "next/link";
 
 const FEATURES = [
   {
@@ -189,6 +190,18 @@ export default function Home() {
                   {f.headline}
                 </p>
                 <p className="mt-3 max-w-md text-fog">{f.body}</p>
+                {f.title === "Sagot Mo" && (
+                  <Link
+                    href="/play"
+                    data-play-cta
+                    className="kilig-glow-bg kilig-cta-shadow mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-plum transition active:scale-[0.98]"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                      <path d="M4 2.5v11l9-5.5-9-5.5z" />
+                    </svg>
+                    Laruin ang isang eksena — libre
+                  </Link>
+                )}
               </div>
             </div>
           ))}
@@ -245,7 +258,25 @@ export default function Home() {
       <footer className="relative z-10 border-t border-plum-800 px-5 py-10 text-center">
         <p className="font-display text-xl font-semibold text-rose">kilig</p>
         <p className="mt-2 text-sm text-fog">Ikaw ang bida sa sariling teleserye.</p>
-        <p className="mt-4 text-xs text-fog/60">
+        <div className="mt-5 flex items-center justify-center">
+          <a
+            href="https://www.facebook.com/1222004864328121"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Sundan ang Kilig sa Facebook"
+            className="grid h-10 w-10 place-items-center rounded-full border border-plum-700 text-fog transition hover:border-rose hover:text-rose"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073c0 6.026 4.388 11.02 10.125 11.927v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796v8.437C19.612 23.094 24 18.099 24 12.073z" />
+            </svg>
+          </a>
+        </div>
+        <p className="mt-5 text-xs text-fog/60">
           © 2026 Kilig. Kokolektahin lang namin ang email at sagot mo para sa
           early access — walang spam, puwedeng mag-opt out anytime.
         </p>
