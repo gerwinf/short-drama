@@ -151,6 +151,78 @@ export const ALL_QUESTIONS: Question[] = [
 // the existing jsonb column, no schema change.
 export const FORM_VERSION = "2026-07-20-vibe-first";
 
+// ── Willingness-to-pay fake door ────────────────────────────────────────────
+// After a lead is captured we show a founding-member "reserve your price" gate.
+// Nothing is charged — it's a fake door that measures INTENT to pay, the one
+// signal free clicks/signups can't give us. Two price variants so we can learn
+// PH-mass vs diaspora ARPU from the same build.
+export type PricePlan = {
+  id: string; // stable key, also the value tagged on price events
+  currency: string; // PHP | USD
+  symbol: string; // ₱ | $
+  amount: string; // display price, e.g. "149" / "9.99"
+  anchor: string; // struck-through "was" price, e.g. "₱299"
+  period: string; // "buwan" / "mo"
+  offer: string; // small badge, e.g. "50% OFF habambuhay"
+  headline: string;
+  sub: string;
+  reserveCta: string;
+  reassure: string; // the "you won't be charged" line — keeps the fake door honest
+  skipCta: string;
+  confirmTitle: string;
+  confirmBody: string;
+};
+
+export const PRICE_PLANS: Record<string, PricePlan> = {
+  ph: {
+    id: "ph",
+    currency: "PHP",
+    symbol: "₱",
+    amount: "149",
+    anchor: "₱299",
+    period: "buwan",
+    offer: "50% OFF — founding price",
+    headline: "Maging Founding Member ng Kilig 💖",
+    sub: "Unlimited na interactive kwento, ikaw ang bida, at ikaw ang mauuna pag-launch. I-lock in ang founding price habang bukas pa.",
+    reserveCta: "I-reserve ang founding price ko",
+    reassure: "Wala pang babayaran ngayon — reservation lang 'to.",
+    skipCta: "Sa ngayon, early access muna",
+    confirmTitle: "Reserved na! 🎉 Founding member ka na.",
+    confirmBody:
+      "Naka-lock in ang ₱149/buwan founding price mo. Wala pang singil — ie-email ka namin bago mag-launch.",
+  },
+  diaspora: {
+    id: "diaspora",
+    currency: "USD",
+    symbol: "$",
+    amount: "9.99",
+    anchor: "$19.99",
+    period: "mo",
+    offer: "50% OFF — founding price",
+    headline: "Become a Kilig Founding Member 💖",
+    sub: "Unlimited interactive Pinoy drama, you're the lead, and first access at launch. Lock in the founding price while it's open — a piece of home wherever you are.",
+    reserveCta: "Reserve my founding price",
+    reassure: "You won't be charged now — this just holds your spot.",
+    skipCta: "Just early access for now",
+    confirmTitle: "Reserved! 🎉 You're a founding member.",
+    confirmBody:
+      "Your $9.99/mo founding price is locked in. No charge yet — we'll email you before launch.",
+  },
+};
+
+export const DEFAULT_PLAN = "ph";
+
+// Which price variant to show. A `?price=` URL param wins (so a diaspora ad set
+// can link straight to the USD test); otherwise infer from the `location`
+// answer (anyone abroad → diaspora); otherwise PH. Pure + testable.
+export function resolvePlan(priceParam?: string | null, location?: string): string {
+  const p = (priceParam || "").trim().toLowerCase();
+  if (p === "usd" || p === "diaspora" || p === "intl") return "diaspora";
+  if (p === "php" || p === "ph") return "ph";
+  if (location === "ofw" || location === "other") return "diaspora";
+  return DEFAULT_PLAN;
+}
+
 export type UtmData = {
   utm_source?: string;
   utm_medium?: string;
@@ -170,20 +242,32 @@ export type Submission = {
 };
 
 // Lightweight funnel events — powers conversion rate + per-step drop-off.
-//   view         — page visit (once/session)
-//   open         — quiz modal opened (once/session)
-//   step         — a quiz question was answered (meta.step / meta.questionId / meta.value)
-//   close        — modal closed before finishing (meta.step = step abandoned on)
-//   submit_error — email submit reached the server but failed (meta.reason).
-//                  Critical: distinguishes a goal-line bug from real abandonment.
-export type TrackEventType = "view" | "open" | "step" | "close" | "submit_error";
+//   view          — page visit (once/session)
+//   open          — quiz modal opened (once/session)
+//   step          — a quiz question was answered (meta.step / meta.questionId / meta.value)
+//   close         — modal closed before finishing (meta.step = step abandoned on)
+//   submit_error  — email submit reached the server but failed (meta.reason).
+//                   Critical: distinguishes a goal-line bug from real abandonment.
+//   price_view    — WTP fake door shown after lead capture (meta.plan / meta.value = price)
+//   reserve_click — tapped "reserve founding price" — the willingness-to-pay signal
+//   reserve_skip  — declined the price, took plain early access
+export type TrackEventType =
+  | "view"
+  | "open"
+  | "step"
+  | "close"
+  | "submit_error"
+  | "price_view"
+  | "reserve_click"
+  | "reserve_skip";
 
 export type TrackEventMeta = {
   step?: number; // 1-based step index
   questionId?: string; // question answered / step context
-  value?: string; // chosen option value
+  value?: string; // chosen option value (or price label on WTP events)
   reason?: string; // submit_error detail
   formVersion?: string; // form revision that produced the event — segments funnels
+  plan?: string; // WTP price variant shown (ph | diaspora)
 };
 
 export type TrackEvent = {

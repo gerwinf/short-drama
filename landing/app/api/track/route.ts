@@ -13,6 +13,9 @@ const ALLOWED_TYPES: TrackEventType[] = [
   "step",
   "close",
   "submit_error",
+  "price_view",
+  "reserve_click",
+  "reserve_skip",
 ];
 
 // Keep meta small and typed — never trust arbitrary client payloads into jsonb.
@@ -27,6 +30,7 @@ function cleanMeta(m: unknown): TrackEventMeta | undefined {
   if (typeof src.reason === "string") meta.reason = src.reason.slice(0, 200);
   if (typeof src.formVersion === "string")
     meta.formVersion = src.formVersion.slice(0, 40);
+  if (typeof src.plan === "string") meta.plan = src.plan.slice(0, 24);
   return Object.keys(meta).length ? meta : undefined;
 }
 

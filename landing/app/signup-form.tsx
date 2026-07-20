@@ -1,7 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { FORM_VERSION, QUESTIONS, VERDICTS, type Question } from "@/lib/types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FORM_VERSION,
+  PRICE_PLANS,
+  QUESTIONS,
+  VERDICTS,
+  resolvePlan,
+  type PricePlan,
+  type Question,
+} from "@/lib/types";
 import { readUtm } from "@/lib/utm";
 import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
@@ -32,8 +40,20 @@ export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  // null = price gate not yet answered; true/false = reserved / skipped.
+  const [reserved, setReserved] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const openTracked = useRef(false);
+
+  // Which founding-member price to show. `?price=` wins (diaspora ad sets link
+  // straight to the USD test), else inferred from the location answer.
+  const plan: PricePlan = useMemo(() => {
+    const priceParam =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("price")
+        : null;
+    return PRICE_PLANS[resolvePlan(priceParam, answers.location)] ?? PRICE_PLANS.ph;
+  }, [answers.location]);
 
   const openModal = useCallback(() => {
     setOpen(true);
@@ -166,7 +186,11 @@ export default function SignupForm() {
         {/* Body */}
         <div className="flex flex-1 flex-col justify-center overflow-y-auto px-5 py-6">
           {done ? (
-            <Success email={email} />
+            reserved === null ? (
+              <PriceGate plan={plan} onResolve={setReserved} />
+            ) : (
+              <Success email={email} reserved={reserved} plan={plan} />
+            )
           ) : isEmailStep ? (
             <div>
               <h2 className="font-display text-2xl font-semibold text-cream">
@@ -271,7 +295,80 @@ function Step({
   );
 }
 
-function Success({ email }: { email: string }) {
+// Willingness-to-pay fake door. Shown once the lead is already saved, so
+// tapping "reserve" (or skipping) never costs us the signup — it only adds the
+// intent-to-pay signal. Nothing is charged; there are no payment fields.
+function PriceGate({
+  plan,
+  onResolve,
+}: {
+  plan: PricePlan;
+  onResolve: (reserved: boolean) => void;
+}) {
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (viewed.current) return;
+    viewed.current = true;
+    track("price_view", {
+      plan: plan.id,
+      value: `${plan.symbol}${plan.amount}`,
+    });
+  }, [plan]);
+
+  const priceLabel = `${plan.symbol}${plan.amount}`;
+
+  return (
+    <div className="text-center">
+      <span className="inline-block rounded-full kilig-glow-bg px-3 py-1 text-xs font-semibold text-plum">
+        {plan.offer}
+      </span>
+      <h2 className="mt-4 font-display text-2xl font-semibold text-cream">
+        {plan.headline}
+      </h2>
+
+      <div className="mt-5 flex items-end justify-center gap-2">
+        <span className="text-sm text-fog line-through">{plan.anchor}</span>
+        <span className="font-display text-5xl font-semibold text-rose">
+          {priceLabel}
+        </span>
+        <span className="mb-1 text-sm text-fog">/{plan.period}</span>
+      </div>
+
+      <p className="mt-4 text-sm text-fog">{plan.sub}</p>
+
+      <button
+        onClick={() => {
+          track("reserve_click", { plan: plan.id, value: priceLabel });
+          onResolve(true);
+        }}
+        className="kilig-cta-shadow mt-6 w-full rounded-full bg-rose px-6 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
+      >
+        {plan.reserveCta}
+      </button>
+      <p className="mt-2 text-xs text-fog/70">{plan.reassure}</p>
+
+      <button
+        onClick={() => {
+          track("reserve_skip", { plan: plan.id });
+          onResolve(false);
+        }}
+        className="mt-4 text-sm text-fog hover:text-cream"
+      >
+        {plan.skipCta}
+      </button>
+    </div>
+  );
+}
+
+function Success({
+  email,
+  reserved,
+  plan,
+}: {
+  email: string;
+  reserved: boolean;
+  plan: PricePlan;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
@@ -295,14 +392,20 @@ function Success({ email }: { email: string }) {
   return (
     <div className="text-center">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-full kilig-glow-bg text-3xl">
-        💖
+        {reserved ? "🌟" : "💖"}
       </div>
       <h2 className="mt-5 font-display text-3xl font-semibold text-cream">
-        Nasa list ka na! 🎉
+        {reserved ? plan.confirmTitle : "Nasa list ka na! 🎉"}
       </h2>
       <p className="mt-3 text-fog">
-        Salamat! Naka-reserve na ang early access mo. Abangan mo ang email sa{" "}
-        <span className="text-cream">{email}</span> pag-launch ng Kilig.
+        {reserved ? (
+          plan.confirmBody
+        ) : (
+          <>
+            Salamat! Naka-reserve na ang early access mo. Abangan mo ang email sa{" "}
+            <span className="text-cream">{email}</span> pag-launch ng Kilig.
+          </>
+        )}
       </p>
       <p className="mt-6 text-sm text-fog">
         Gusto mong mauna ang barkada mo? I-share mo na 👀

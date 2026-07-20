@@ -7,9 +7,13 @@ import {
   FORM_VERSION,
   labelFor,
   type Submission,
-  type TrackEvent,
 } from "@/lib/types";
-import { LoginForm, LogoutButton, ResetButton } from "./dashboard-client";
+import {
+  Broadcast,
+  LoginForm,
+  LogoutButton,
+  ResetButton,
+} from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
 
@@ -198,6 +202,20 @@ export default async function Dashboard() {
     (e) => e.type === "open" && !e.meta?.formVersion,
   ).length;
 
+  // Willingness to pay: the founding-member fake door. reserve ÷ price_view is
+  // the intent-to-pay rate free signups can't measure. Split by price variant
+  // so PH-mass and diaspora ARPU theses are read separately.
+  const priceViews = events.filter((e) => e.type === "price_view");
+  const reserves = events.filter((e) => e.type === "reserve_click");
+  const wtpByPlan = [
+    { id: "ph", label: "PH — ₱149/mo", bar: "≥8–10%" },
+    { id: "diaspora", label: "Diaspora — $9.99/mo", bar: "≥5%" },
+  ].map((p) => ({
+    ...p,
+    views: priceViews.filter((e) => e.meta?.plan === p.id).length,
+    reserves: reserves.filter((e) => e.meta?.plan === p.id).length,
+  }));
+
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const recent = [...subs].reverse();
 
@@ -216,6 +234,8 @@ export default async function Dashboard() {
             <LogoutButton />
           </div>
         </div>
+
+        <Broadcast count={subs.length} />
 
         {/* Funnel */}
         <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -267,6 +287,54 @@ export default async function Dashboard() {
             value={submitErrors}
             hint="reached email, submit failed — a bug, not abandonment"
           />
+        </div>
+
+        {/* Willingness to pay — the founding-member fake door */}
+        <h2 className="mt-10 text-sm font-semibold uppercase tracking-wide text-fog">
+          Willingness to pay (founding-member fake door)
+        </h2>
+        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <StatCard
+            label="Price views"
+            value={priceViews.length}
+            hint="reached the reserve screen"
+          />
+          <StatCard
+            label="Reservations"
+            value={reserves.length}
+            hint="tapped “reserve my price”"
+          />
+          <StatCard
+            label="WTP conversion"
+            value={pct(reserves.length, priceViews.length)}
+            hint="reserve ÷ price view"
+          />
+          <StatCard
+            label="Skipped"
+            value={priceViews.length - reserves.length}
+            hint="saw price, took free access"
+          />
+        </div>
+        <div className="mt-4 rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
+          <p className="text-sm font-semibold text-cream">By price variant</p>
+          <div className="mt-3 flex flex-col gap-2">
+            {wtpByPlan.map((r) => (
+              <div key={r.id} className="flex justify-between text-sm">
+                <span className="text-fog">
+                  {r.label}{" "}
+                  <span className="text-fog/50">pass {r.bar}</span>
+                </span>
+                <span className="text-cream">
+                  {r.reserves}/{r.views} reserved · {pct(r.reserves, r.views)}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-fog/70">
+            The signal free signups can’t give. Below the pass bar, the audience
+            likes it free but won’t pay — a red flag worth catching before
+            production spend.
+          </p>
         </div>
 
         {/* Answer breakdowns */}
