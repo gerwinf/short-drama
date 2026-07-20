@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Ending } from "../story/types";
 import KiligMeter from "./KiligMeter";
 
@@ -18,6 +19,34 @@ export default function EndingCard({
   onShare: () => void;
 }) {
   const isPayoff = ending.key !== "twist";
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
+
+  // Native share sheet where available (mobile), clipboard copy as a fallback
+  // (desktop). Either way the viewer gets a deep link back into the episode.
+  async function handleShare() {
+    onShare(); // analytics
+    const url =
+      typeof window !== "undefined" ? `${window.location.origin}/play` : "";
+    const text = `Na-unlock ko ang “${ending.title}” ending sa Kilig 😳 Ikaw, anong landas ang pipiliin mo? 👉`;
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title: "Kilig — Ikaw ang Bida", text, url });
+        return;
+      } catch (err) {
+        // User dismissed the sheet — do nothing, don't fall back to copy.
+        if ((err as Error)?.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setShareMsg("Na-copy ang link! 📋 I-paste sa Stories o Reels.");
+    } catch {
+      setShareMsg(url ? `I-copy ang link: ${url}` : "Hindi ma-share ngayon.");
+    }
+    setTimeout(() => setShareMsg(null), 3500);
+  }
   return (
     <div className="animate-fade-up absolute inset-0 z-30 flex flex-col justify-end overflow-y-auto">
       {/* confetti sparkles on a kilig payoff */}
@@ -59,6 +88,12 @@ export default function EndingCard({
           </p>
         </div>
 
+        {shareMsg && (
+          <p className="mb-3 rounded-xl bg-plum-800/80 px-3 py-2 text-center text-xs font-medium text-gold backdrop-blur">
+            {shareMsg}
+          </p>
+        )}
+
         <div className="flex flex-col gap-3">
           <button
             data-kilig-open
@@ -68,7 +103,7 @@ export default function EndingCard({
           </button>
           <div className="flex gap-3">
             <button
-              onClick={onShare}
+              onClick={handleShare}
               className="flex-1 rounded-full border border-white/25 py-3 text-center text-sm font-semibold text-cream active:scale-[0.98]"
             >
               I-share: Ikaw ang Bida
