@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import MetaPixel from "./meta-pixel";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
       <body className="min-h-full">
         <MetaPixel />
         {children}
+        <Analytics />
       </body>
     </html>
   );
