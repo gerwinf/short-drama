@@ -87,6 +87,108 @@ export function ResetButton() {
   );
 }
 
+export function Broadcast({ count }: { count: number }) {
+  const [testEmail, setTestEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [skip, setSkip] = useState(0); // offset for later batches
+
+  async function send(mode: "test" | "all") {
+    if (mode === "test" && !testEmail) {
+      setMsg("Enter a test email first.");
+      return;
+    }
+    if (
+      mode === "all" &&
+      !confirm(
+        `Send the vote-drive email to the oldest 100 signups (skipping the first ${skip})? Real emails, cannot be undone.`,
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/dashboard/broadcast", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          testEmail: testEmail.trim(),
+          offset: skip,
+          limit: 100,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || "failed");
+      if (mode === "test") {
+        setMsg(`Test sent (${data.sent} ok, ${data.failed} failed).`);
+      } else {
+        const done = skip + data.recipients;
+        const remaining = Math.max(0, (data.total ?? 0) - done);
+        setMsg(
+          `Sent ${data.sent}/${data.recipients} (failed ${data.failed}). ` +
+            `${data.total} real signups, ${remaining} remaining.` +
+            (remaining > 0
+              ? ` Next batch tomorrow: set "skip first" to ${done}.`
+              : " 🎉 All sent.") +
+            (data.errors?.length ? ` [${data.errors[0]}]` : ""),
+        );
+      }
+    } catch (e) {
+      setMsg("Error: " + (e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-6 rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
+      <p className="text-sm font-semibold text-cream">
+        Send vote-drive email (Resend) · {count} rows in DB
+      </p>
+      <p className="mt-1 text-xs text-fog/70">
+        From your domain. Test yourself first, then send the oldest 100 (Resend
+        free-tier daily cap; test emails auto-excluded). For batch 2 tomorrow,
+        bump &quot;skip first&quot;.
+      </p>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input
+          type="email"
+          placeholder="you@email.com (test)"
+          value={testEmail}
+          onChange={(e) => setTestEmail(e.target.value)}
+          className="rounded-full border border-plum-700 bg-plum px-4 py-2 text-sm text-cream outline-none focus:border-rose"
+        />
+        <button
+          disabled={busy}
+          onClick={() => send("test")}
+          className="rounded-full border border-plum-700 px-4 py-2 text-sm text-fog hover:text-cream disabled:opacity-60"
+        >
+          {busy ? "Sending…" : "Send test"}
+        </button>
+        <label className="text-xs text-fog/70">
+          skip first
+          <input
+            type="number"
+            min={0}
+            value={skip}
+            onChange={(e) => setSkip(Math.max(0, Number(e.target.value) || 0))}
+            className="ml-2 w-20 rounded-full border border-plum-700 bg-plum px-3 py-2 text-sm text-cream outline-none focus:border-rose"
+          />
+        </label>
+        <button
+          disabled={busy}
+          onClick={() => send("all")}
+          className="rounded-full bg-rose px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        >
+          {busy ? "Sending…" : "Send oldest 100"}
+        </button>
+      </div>
+      {msg && <p className="mt-2 text-sm text-fog">{msg}</p>}
+    </div>
+  );
+}
+
 export function LogoutButton() {
   const router = useRouter();
   return (
