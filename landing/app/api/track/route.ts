@@ -25,6 +25,8 @@ function cleanMeta(m: unknown): TrackEventMeta | undefined {
     meta.questionId = src.questionId.slice(0, 64);
   if (typeof src.value === "string") meta.value = src.value.slice(0, 64);
   if (typeof src.reason === "string") meta.reason = src.reason.slice(0, 200);
+  if (typeof src.formVersion === "string")
+    meta.formVersion = src.formVersion.slice(0, 40);
   return Object.keys(meta).length ? meta : undefined;
 }
 

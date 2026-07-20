@@ -1,7 +1,14 @@
 import { cookies } from "next/headers";
 import { isValidToken, DASH_COOKIE } from "@/lib/auth";
 import { getSubmissions, getEvents } from "@/lib/store";
-import { QUESTIONS, VERDICTS, labelFor, type Submission } from "@/lib/types";
+import {
+  QUESTIONS,
+  VERDICTS,
+  FORM_VERSION,
+  labelFor,
+  type Submission,
+  type TrackEvent,
+} from "@/lib/types";
 import { LoginForm, LogoutButton, ResetButton } from "./dashboard-client";
 
 export const dynamic = "force-dynamic";
@@ -68,15 +75,22 @@ function Breakdown({
 
 // Per-step quiz funnel: each row is "reached this step". The drop between
 // consecutive rows is abandonment at that step — pinpoints the real cliff.
-function StepFunnel({ rows }: { rows: { label: string; count: number }[] }) {
+// One funnel PER form version: questionIds repeat across reorders, so a single
+// all-versions funnel is meaningless (a reordered question inflates its count).
+function StepFunnel({
+  title,
+  subtitle,
+  rows,
+}: {
+  title: string;
+  subtitle?: string;
+  rows: { label: string; count: number }[];
+}) {
   const base = rows[0]?.count || 0;
   return (
     <div className="rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
-      <p className="text-sm font-semibold text-cream">Quiz step drop-off</p>
-      <p className="mt-1 text-xs text-fog/70">
-        Reached each step, as % of form opens. Red = people lost vs. the previous
-        step.
-      </p>
+      <p className="text-sm font-semibold text-cream">{title}</p>
+      {subtitle && <p className="mt-1 text-xs text-fog/70">{subtitle}</p>}
       <div className="mt-3 flex flex-col gap-2">
         {rows.map((r, i) => {
           const prev = i > 0 ? rows[i - 1].count : r.count;
@@ -137,24 +151,52 @@ export default async function Dashboard() {
   const opens = events.filter((e) => e.type === "open").length;
   const signups = subs.length;
 
-  // Per-step funnel from "step" events (one per answered question). Verdict
-  // steps share a prefix; group them into a single step-6 row.
-  const stepEvents = events.filter((e) => e.type === "step");
-  const answeredCount = (qId: string) =>
-    stepEvents.filter((e) => e.meta?.questionId === qId).length;
-  const verdictReached = stepEvents.filter((e) =>
-    e.meta?.questionId?.startsWith("verdict"),
-  ).length;
   const submitErrors = events.filter((e) => e.type === "submit_error").length;
-  const stepRows = [
-    { label: "Form opens", count: opens },
-    ...QUESTIONS.map((q, i) => ({
-      label: `${i + 1}. ${q.id}`,
-      count: answeredCount(q.id),
-    })),
-    { label: `${QUESTIONS.length + 1}. verdict`, count: verdictReached },
-    { label: `${QUESTIONS.length + 2}. email → signup`, count: signups },
-  ];
+
+  // Per-version funnels. A question reorder reuses questionIds, so mixing
+  // versions in one funnel is meaningless (a moved question inflates its own
+  // count). Build one funnel per form version present in tagged events; always
+  // include the current FORM_VERSION so it shows even before it has traffic.
+  const versionSet = new Set<string>([FORM_VERSION]);
+  for (const e of events) {
+    if (e.meta?.formVersion) versionSet.add(e.meta.formVersion);
+  }
+  const versions = [...versionSet].sort((a, b) =>
+    a === FORM_VERSION ? -1 : b === FORM_VERSION ? 1 : b.localeCompare(a),
+  );
+
+  const funnelFor = (version: string) => {
+    const evs = events.filter((e) => e.meta?.formVersion === version);
+    const vOpens = evs.filter((e) => e.type === "open").length;
+    const steps = evs.filter((e) => e.type === "step");
+    const answered = (qId: string) =>
+      steps.filter((e) => e.meta?.questionId === qId).length;
+    const verdictReached = steps.filter((e) =>
+      e.meta?.questionId?.startsWith("verdict"),
+    ).length;
+    // email→signup from submissions tagged with this version (submissions have
+    // carried form_version in answers since before event tagging).
+    const vSignups = subs.filter(
+      (s) => s.answers.form_version === version,
+    ).length;
+    const rows = [
+      { label: "Form opens", count: vOpens },
+      ...QUESTIONS.map((q, i) => ({
+        label: `${i + 1}. ${q.id}`,
+        count: answered(q.id),
+      })),
+      { label: `${QUESTIONS.length + 1}. verdict`, count: verdictReached },
+      { label: `${QUESTIONS.length + 2}. email → signup`, count: vSignups },
+    ];
+    return { version, vOpens, vSignups, rows };
+  };
+
+  const funnels = versions.map(funnelFor);
+  // Events with no formVersion predate event-tagging (2026-07-20) — count them
+  // so the funnels' missing history is visible, not silently dropped.
+  const untaggedOpens = events.filter(
+    (e) => e.type === "open" && !e.meta?.formVersion,
+  ).length;
 
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const recent = [...subs].reverse();
@@ -195,10 +237,30 @@ export default async function Dashboard() {
           />
         </div>
 
-        {/* Per-step drop-off + goal-line failures */}
+        {/* Per-step drop-off (per form version) + goal-line failures */}
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <StepFunnel rows={stepRows} />
+          <div className="flex flex-col gap-4 md:col-span-2">
+            {funnels.map((f) => (
+              <StepFunnel
+                key={f.version}
+                title={`Quiz step drop-off — ${f.version}${
+                  f.version === FORM_VERSION ? " (current)" : ""
+                }`}
+                subtitle={
+                  f.version === FORM_VERSION
+                    ? `${f.vOpens} tagged opens. Reached each step, as % of opens; red = lost vs. previous. Baseline to beat: gender-first lost ~51% at step 1.`
+                    : `${f.vOpens} tagged opens. Reached each step, as % of opens.`
+                }
+                rows={f.rows}
+              />
+            ))}
+            {untaggedOpens > 0 && (
+              <p className="text-xs text-fog/60">
+                + {untaggedOpens} form opens before event-tagging (2026-07-20) —
+                their step order can&apos;t be segmented, so they&apos;re excluded
+                from the funnels above.
+              </p>
+            )}
           </div>
           <StatCard
             label="Submit errors"

@@ -9,11 +9,18 @@ const TOTAL_STEPS = QUESTIONS.length + 2; // questions + vibe-matched verdict + 
 
 // Fire-and-forget funnel event. keepalive lets it survive an unloading page
 // (e.g. the "close" event when the user dismisses the modal or leaves).
+// Every event carries formVersion so the dashboard can segment funnels by form
+// revision (a question reorder reuses questionIds, so mixing versions in one
+// funnel is meaningless — see the vibe/gender ordering swap on 2026-07-20).
 function track(type: string, meta?: Record<string, unknown>) {
   fetch("/api/track", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ type, meta, utm: readUtm() }),
+    body: JSON.stringify({
+      type,
+      meta: { formVersion: FORM_VERSION, ...meta },
+      utm: readUtm(),
+    }),
     keepalive: true,
   }).catch(() => {});
 }

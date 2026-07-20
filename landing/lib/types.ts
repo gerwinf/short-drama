@@ -183,6 +183,7 @@ export type TrackEventMeta = {
   questionId?: string; // question answered / step context
   value?: string; // chosen option value
   reason?: string; // submit_error detail
+  formVersion?: string; // form revision that produced the event — segments funnels
 };
 
 export type TrackEvent = {
