@@ -16,6 +16,11 @@ const ALLOWED_TYPES: TrackEventType[] = [
   "price_view",
   "reserve_click",
   "reserve_skip",
+  "play_start",
+  "play_choice",
+  "play_ending",
+  "play_replay",
+  "play_share",
 ];
 
 // Keep meta small and typed — never trust arbitrary client payloads into jsonb.

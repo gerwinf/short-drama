@@ -70,3 +70,181 @@ body {
 .animate-floaty {
   animation: floaty 6s ease-in-out infinite;
 }
+
+/* ---- Interactive player (/play) ---- */
+
+/* Heartbeat pulse on CTAs and decision points */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.35);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.2);
+  }
+}
+.animate-heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Ken Burns — slow drift on scene stills so they feel alive */
+@keyframes kb-in {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.14);
+  }
+}
+@keyframes kb-out {
+  from {
+    transform: scale(1.14);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+@keyframes kb-pan-right {
+  from {
+    transform: scale(1.12) translateX(-2%);
+  }
+  to {
+    transform: scale(1.12) translateX(2%);
+  }
+}
+@keyframes kb-pan-left {
+  from {
+    transform: scale(1.12) translateX(2%);
+  }
+  to {
+    transform: scale(1.12) translateX(-2%);
+  }
+}
+.kb-in {
+  animation: kb-in 14s ease-out forwards;
+}
+.kb-out {
+  animation: kb-out 14s ease-out forwards;
+}
+.kb-pan-right {
+  animation: kb-pan-right 14s ease-in-out forwards;
+}
+.kb-pan-left {
+  animation: kb-pan-left 14s ease-in-out forwards;
+}
+
+/* Scene media fades in so a decode gap never flashes hard */
+@keyframes media-in {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-media-in {
+  animation: media-in 0.55s ease-out;
+}
+
+/* Branch-split shimmer sweeping across the decision overlay */
+@keyframes split-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+.animate-split-shimmer {
+  animation: split-shimmer 2.6s ease-in-out infinite;
+}
+
+/* Choice cards sliding up into view */
+@keyframes choice-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-choice-rise {
+  opacity: 0;
+  animation: choice-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* "The Other Path" flash — fade in, hold, fade out over 2.5s */
+@keyframes other-path {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  15%,
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+.animate-other-path {
+  animation: other-path 2.5s ease-in-out forwards;
+}
+
+/* Ending card rise */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+/* Confetti sparkle on a kilig payoff */
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.9);
+  }
+}
+.animate-sparkle {
+  animation: sparkle 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-heartbeat,
+  .kb-in,
+  .kb-out,
+  .kb-pan-right,
+  .kb-pan-left,
+  .animate-split-shimmer,
+  .animate-sparkle,
+  .animate-floaty {
+    animation: none !important;
+  }
+}

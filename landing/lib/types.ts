@@ -259,7 +259,14 @@ export type TrackEventType =
   | "submit_error"
   | "price_view"
   | "reserve_click"
-  | "reserve_skip";
+  | "reserve_skip"
+  // Interactive player (/play): meta.questionId = node id, meta.value = choice
+  // label / ending key.
+  | "play_start"
+  | "play_choice"
+  | "play_ending"
+  | "play_replay"
+  | "play_share";
 
 export type TrackEventMeta = {
   step?: number; // 1-based step index
