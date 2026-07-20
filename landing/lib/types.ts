@@ -275,6 +275,10 @@ export type TrackEventMeta = {
   reason?: string; // submit_error detail
   formVersion?: string; // form revision that produced the event — segments funnels
   plan?: string; // WTP price variant shown (ph | diaspora)
+  email?: string; // captured signup email — set ONLY on WTP events (price_view /
+  //                  reserve_click / reserve_skip), which fire after lead capture.
+  //                  Lets the dashboard join anonymous price events back to the
+  //                  signup that produced them.
 };
 
 export type TrackEvent = {
@@ -291,4 +295,45 @@ export function labelFor(questionId: string, value: string): string {
   const q = ALL_QUESTIONS.find((q) => q.id === questionId);
   const opt = q?.options.find((o) => o.value === value);
   return opt?.label ?? value;
+}
+
+// Per-user willingness-to-pay status, derived by joining WTP price events back
+// to the signup that produced them (the events carry meta.email since they fire
+// after email capture). Each email collapses to its STRONGEST intent signal:
+// reserved > skipped > viewed. Used by the dashboard's "All submissions" WTP
+// column and the CSV export.
+export type WtpStatus = "reserved" | "skipped" | "viewed";
+export type WtpEntry = { status: WtpStatus; price?: string; plan?: string };
+
+export function wtpByEmail(events: TrackEvent[]): Map<string, WtpEntry> {
+  const rank: Record<WtpStatus, number> = { viewed: 0, skipped: 1, reserved: 2 };
+  const map = new Map<string, WtpEntry>();
+  for (const e of events) {
+    const email = e.meta?.email?.trim().toLowerCase();
+    if (!email) continue;
+    const status: WtpStatus | null =
+      e.type === "reserve_click"
+        ? "reserved"
+        : e.type === "reserve_skip"
+          ? "skipped"
+          : e.type === "price_view"
+            ? "viewed"
+            : null;
+    if (!status) continue;
+    const prev = map.get(email);
+    if (!prev || rank[status] > rank[prev.status]) {
+      map.set(email, { status, price: e.meta?.value, plan: e.meta?.plan });
+    }
+  }
+  return map;
+}
+
+// Look up a signup's WTP entry, normalizing the email exactly the way
+// wtpByEmail keys the map. Both the dashboard table and the CSV export go
+// through this so the join key can't drift between the two call sites.
+export function wtpFor(
+  map: Map<string, WtpEntry>,
+  email: string,
+): WtpEntry | undefined {
+  return map.get(email.trim().toLowerCase());
 }

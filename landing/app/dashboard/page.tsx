@@ -6,6 +6,8 @@ import {
   VERDICTS,
   FORM_VERSION,
   labelFor,
+  wtpByEmail,
+  wtpFor,
   type Submission,
 } from "@/lib/types";
 import {
@@ -216,6 +218,10 @@ export default async function Dashboard() {
     reserves: reserves.filter((e) => e.meta?.plan === p.id).length,
   }));
 
+  // Per-signup WTP status, so the All submissions table can show WHO reserved —
+  // not just the aggregate rate above. Joins price events to signups by email.
+  const wtp = wtpByEmail(events);
+
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const recent = [...subs].reverse();
 
@@ -382,7 +388,7 @@ export default async function Dashboard() {
           </a>
         </div>
         <div className="mt-4 overflow-x-auto rounded-2xl border border-plum-700">
-          <table className="w-full min-w-[820px] text-left text-sm">
+          <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="bg-plum-800/60 text-fog">
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>
@@ -393,6 +399,7 @@ export default async function Dashboard() {
                   </th>
                 ))}
                 <th className="px-4 py-3 font-medium">Verdict</th>
+                <th className="px-4 py-3 font-medium">WTP</th>
                 <th className="px-4 py-3 font-medium">Source</th>
               </tr>
             </thead>
@@ -423,6 +430,21 @@ export default async function Dashboard() {
                         : "—";
                     })()}
                   </td>
+                  <td className="px-4 py-3">
+                    {(() => {
+                      const w = wtpFor(wtp, s.email);
+                      if (!w) return <span className="text-fog/50">—</span>;
+                      if (w.status === "reserved")
+                        return (
+                          <span className="font-semibold text-rose">
+                            💳 {w.price ?? "Reserved"}
+                          </span>
+                        );
+                      if (w.status === "skipped")
+                        return <span className="text-fog">Skipped</span>;
+                      return <span className="text-fog/60">Saw price</span>;
+                    })()}
+                  </td>
                   <td className="px-4 py-3 text-fog">
                     {s.utm.utm_source || "direct"}
                   </td>
@@ -431,7 +453,7 @@ export default async function Dashboard() {
               {recent.length === 0 && (
                 <tr>
                   <td
-                    colSpan={QUESTIONS.length + 4}
+                    colSpan={QUESTIONS.length + 5}
                     className="px-4 py-8 text-center text-fog/60"
                   >
                     No submissions yet. Share the landing page to start

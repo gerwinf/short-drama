@@ -36,6 +36,9 @@ function cleanMeta(m: unknown): TrackEventMeta | undefined {
   if (typeof src.formVersion === "string")
     meta.formVersion = src.formVersion.slice(0, 40);
   if (typeof src.plan === "string") meta.plan = src.plan.slice(0, 24);
+  // Set only on WTP events, so the dashboard can join price intent back to the
+  // signup. Length-capped like the rest — never trust raw client input.
+  if (typeof src.email === "string") meta.email = src.email.slice(0, 200);
   return Object.keys(meta).length ? meta : undefined;
 }
 
