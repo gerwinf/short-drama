@@ -61,7 +61,8 @@ export default function Player({ story }: { story: Story }) {
   // Choice nodes raise their overlay after a beat (state set only in the callback).
   useEffect(() => {
     if (!node?.choice) return;
-    const t = setTimeout(() => setRevealFor(node.id), 1500);
+    // Let the caption breathe before the choice UI covers it.
+    const t = setTimeout(() => setRevealFor(node.id), 3200);
     return () => clearTimeout(t);
   }, [node]);
 
@@ -79,7 +80,7 @@ export default function Player({ story }: { story: Story }) {
       const next = pending.next;
       setPending(null);
       goTo(next);
-    }, 2500);
+    }, 3800);
     return () => clearTimeout(t);
   }, [pending, goTo]);
 
