@@ -53,6 +53,12 @@ async function getSql(): Promise<NeonQueryFunction<false, false>> {
       // Per-step diagnostics (step/close/submit_error) ride a jsonb `meta`
       // column added to the existing events table — idempotent, no migration.
       await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS meta jsonb NOT NULL DEFAULT '{}'::jsonb`;
+      // Opt-outs. Email is the PK so a repeat unsubscribe is a no-op.
+      await sql`CREATE TABLE IF NOT EXISTS unsubscribes (
+        email text PRIMARY KEY,
+        ts timestamptz NOT NULL,
+        source text
+      )`;
     })();
   }
   await tablesReady;
@@ -101,12 +107,26 @@ async function pgGetEvents(): Promise<TrackEvent[]> {
   }));
 }
 
+async function pgSaveUnsubscribe(email: string, source: string): Promise<void> {
+  const sql = await getSql();
+  await sql`INSERT INTO unsubscribes (email, ts, source)
+    VALUES (${email}, ${new Date().toISOString()}, ${source})
+    ON CONFLICT (email) DO NOTHING`;
+}
+
+async function pgGetUnsubscribes(): Promise<string[]> {
+  const sql = await getSql();
+  const rows = await sql`SELECT email FROM unsubscribes`;
+  return rows.map((r) => r.email as string);
+}
+
 // ---------- File JSONL (local dev fallback) ----------
 const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
   : path.join(process.cwd(), "data");
 const SUBMISSIONS_FILE = path.join(DATA_DIR, "submissions.jsonl");
 const EVENTS_FILE = path.join(DATA_DIR, "events.jsonl");
+const UNSUBS_FILE = path.join(DATA_DIR, "unsubscribes.jsonl");
 
 async function appendLine(file: string, obj: unknown) {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -147,7 +167,27 @@ export async function getEvents(): Promise<TrackEvent[]> {
   return readLines<TrackEvent>(EVENTS_FILE);
 }
 
+// Record an opt-out. Idempotent — unsubscribing twice is a no-op.
+export async function saveUnsubscribe(
+  email: string,
+  source: string,
+): Promise<void> {
+  const e = email.trim().toLowerCase();
+  if (DATABASE_URL) return pgSaveUnsubscribe(e, source);
+  return appendLine(UNSUBS_FILE, { email: e, ts: new Date().toISOString(), source });
+}
+
+// Lowercased opt-out set, for filtering recipients before a send.
+export async function getUnsubscribes(): Promise<Set<string>> {
+  const list = DATABASE_URL
+    ? await pgGetUnsubscribes()
+    : (await readLines<{ email: string }>(UNSUBS_FILE)).map((r) => r.email);
+  return new Set(list.map((e) => e.trim().toLowerCase()));
+}
+
 // Wipe all submissions + events (test-data reset before launch). Destructive.
+// Deliberately does NOT clear `unsubscribes`: opt-outs must survive a data
+// reset, otherwise a reset would silently re-subscribe people who opted out.
 export async function clearAll(): Promise<void> {
   if (DATABASE_URL) {
     const sql = await getSql();

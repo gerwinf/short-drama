@@ -1,4 +1,5 @@
-import { getSubmissions } from "./store";
+import { getSubmissions, getUnsubscribes } from "./store";
+import { unsubUrl } from "./unsubscribe";
 
 /**
  * Resend email sending — talks to the REST API directly (no SDK dependency).
@@ -22,7 +23,10 @@ export type BroadcastResult = { sent: number; failed: number; errors: string[] }
 
 // The vote-drive campaign (Taglish). Kept here so it's the single source of
 // truth for both the test send and the full blast.
-export function voteDriveCampaign() {
+// `unsubLink` is the per-recipient one-click URL. Falls back to the mailto so
+// the template still renders in a preview/test with no recipient context.
+export function voteDriveCampaign(unsubLink?: string) {
+  const unsubHref = unsubLink || `mailto:${UNSUB}?subject=Unsubscribe`;
   const subject = "Ikaw ang bahala sa kwento 💚 (2 seconds lang)";
 
   const html = `<div style="background:#2b0a1f;padding:24px 0;font-family:Arial,Helvetica,sans-serif;">
@@ -39,7 +43,7 @@ export function voteDriveCampaign() {
     <p style="margin:0 0 20px;"><a href="${POST_URL}" style="display:inline-block;background:#ff3d68;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:14px 28px;border-radius:999px;">Panoorin at bumoto 👀</a></p>
     <p style="font-size:15px;line-height:1.6;margin:0 0 4px;">Bukas, <b>ituloy namin ang kwento base sa pinakamaraming boto.</b> Ang boto mo ang bahala sa mangyayari. 💖</p>
     <p style="font-size:14px;line-height:1.6;margin:16px 0 0;color:#c9b6c0;">— Team Kilig</p>
-    <p style="font-size:11px;line-height:1.5;margin:24px 0 0;color:#8a6d78;">Natanggap mo 'to kasi sumali ka sa Kilig early access. Ayaw mo nang ma-email? <a href="mailto:${UNSUB}?subject=Unsubscribe" style="color:#8a6d78;">Mag-unsubscribe dito.</a></p>
+    <p style="font-size:11px;line-height:1.5;margin:24px 0 0;color:#8a6d78;">Natanggap mo 'to kasi sumali ka sa Kilig early access. Ayaw mo nang ma-email? <a href="${unsubHref}" style="color:#8a6d78;">Mag-unsubscribe dito.</a></p>
   </div>
 </div>`;
 
@@ -60,7 +64,7 @@ Bukas, ituloy namin ang kwento base sa pinakamaraming boto.
 
 — Team Kilig
 
-Ayaw mo nang ma-email? Mag-email sa ${UNSUB} para mag-unsubscribe.`;
+Ayaw mo nang ma-email? Mag-unsubscribe dito: ${unsubHref}`;
 
   return { subject, html, text };
 }
@@ -86,7 +90,10 @@ export function isValidEmail(e: string): boolean {
 // getSubmissions() returns ts-ascending, and the Set preserves insertion
 // order, so the returned array is oldest → newest. Drops test/junk rows.
 export async function allRecipientEmails(): Promise<string[]> {
-  const subs = await getSubmissions();
+  const [subs, unsubscribed] = await Promise.all([
+    getSubmissions(),
+    getUnsubscribes(),
+  ]);
   const seen = new Set<string>();
   const out: string[] = [];
   for (const s of subs) {
@@ -94,6 +101,7 @@ export async function allRecipientEmails(): Promise<string[]> {
     if (!e || !isValidEmail(e)) continue;
     if (e.endsWith("@kilig.test") || e.startsWith("db-verify")) continue;
     if (DENYLIST.has(e)) continue;
+    if (unsubscribed.has(e)) continue; // opted out — never email again
     if (seen.has(e)) continue;
     seen.add(e);
     out.push(e);
@@ -110,7 +118,6 @@ export async function sendCampaign(
   recipients: string[],
 ): Promise<BroadcastResult> {
   if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not set");
-  const { subject, html, text } = voteDriveCampaign();
   const result: BroadcastResult = { sent: 0, failed: 0, errors: [] };
 
   const sendOne = async (to: string): Promise<void> => {
@@ -119,13 +126,21 @@ export async function sendCampaign(
       if (result.errors.length < 6) result.errors.push(`${to}: invalid format`);
       return;
     }
+    // Per-recipient so the one-click URL identifies who to opt out.
+    const link = unsubUrl(to);
+    const { subject, html, text } = voteDriveCampaign(link);
     const payload: Record<string, unknown> = {
       from: FROM,
       to,
       subject,
       html,
       text,
-      headers: { "List-Unsubscribe": `<mailto:${UNSUB}?subject=Unsubscribe>` },
+      headers: {
+        // RFC 8058: the https URL enables Gmail/Yahoo's native one-click
+        // Unsubscribe; the mailto stays as a fallback for older clients.
+        "List-Unsubscribe": `<${link}>, <mailto:${UNSUB}?subject=Unsubscribe>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
     };
     if (REPLY_TO) payload.reply_to = REPLY_TO;
 
