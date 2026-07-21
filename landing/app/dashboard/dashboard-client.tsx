@@ -92,19 +92,14 @@ export function Broadcast({ count }: { count: number }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [skip, setSkip] = useState(0); // offset for later batches
+  const [confirming, setConfirming] = useState(false); // in-app confirm gate
 
   async function send(mode: "test" | "all") {
+    if (busy) return; // re-entrancy guard: never fire a second send while one is in flight
     if (mode === "test" && !testEmail) {
       setMsg("Enter a test email first.");
       return;
     }
-    if (
-      mode === "all" &&
-      !confirm(
-        `Send the vote-drive email to the oldest 100 signups (skipping the first ${skip})? Real emails, cannot be undone.`,
-      )
-    )
-      return;
     setBusy(true);
     setMsg(null);
     try {
@@ -178,12 +173,39 @@ export function Broadcast({ count }: { count: number }) {
         </label>
         <button
           disabled={busy}
-          onClick={() => send("all")}
+          onClick={() => setConfirming(true)}
           className="rounded-full bg-rose px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
           {busy ? "Sending…" : "Send oldest 100"}
         </button>
       </div>
+      {confirming && (
+        <div className="mt-3 rounded-xl border border-rose/50 bg-plum/60 p-3">
+          <p className="text-sm text-cream">
+            Send the vote-drive email to the oldest 100 signups (skipping the
+            first {skip})? Real emails, cannot be undone.
+          </p>
+          <div className="mt-2 flex gap-2">
+            <button
+              disabled={busy}
+              onClick={() => {
+                setConfirming(false);
+                send("all");
+              }}
+              className="rounded-full bg-rose px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              Confirm send
+            </button>
+            <button
+              disabled={busy}
+              onClick={() => setConfirming(false)}
+              className="rounded-full border border-plum-700 px-4 py-2 text-sm text-fog hover:text-cream disabled:opacity-60"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       {msg && <p className="mt-2 text-sm text-fog">{msg}</p>}
     </div>
   );
