@@ -42,10 +42,12 @@ const FEATURES = [
   },
 ];
 
+// Premises with a playable episode get playHref — those tiles open the real
+// interactive player; the rest still open the teaser lightbox.
 const VIBE_CLIPS = [
-  { slug: "rich-boy", label: "Rich Boy Next Door" },
+  { slug: "rich-boy", label: "Rich Boy Next Door", playHref: "/play/rich-boy" },
   { slug: "amnesia", label: "Amnesia Twist" },
-  { slug: "enemies", label: "Enemies-to-Lovers" },
+  { slug: "enemies", label: "Enemies-to-Lovers", playHref: "/play/enemies" },
   { slug: "cinderella", label: "Cinderella Teleserye" },
 ];
 

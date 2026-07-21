@@ -1,9 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export type Clip = { slug: string; label: string };
+// `playHref` marks a premise that has a real playable episode — those tiles
+// navigate into the interactive player instead of opening the teaser lightbox
+// (the episode opens with this same clip, so nothing is lost).
+export type Clip = { slug: string; label: string; playHref?: string };
 
 // Reusable click-to-play gallery. Cards show a poster; tapping one opens a
 // lightbox that plays the compressed clip. Videos load only on click.
@@ -40,13 +44,9 @@ export default function ClipGallery({
   return (
     <>
       <div className={container}>
-        {items.map((v) => (
-          <div key={v.slug} className={item}>
-            <button
-              onClick={() => setActive(v)}
-              aria-label={`Panoorin: ${v.label}`}
-              className="group relative block aspect-[9/16] w-full overflow-hidden rounded-2xl border border-plum-700"
-            >
+        {items.map((v) => {
+          const face = (
+            <>
               <Image
                 src={`/clips/${v.slug}.jpg`}
                 alt={v.label}
@@ -60,12 +60,40 @@ export default function ClipGallery({
                   <path d="M4 2.5v11l9-5.5-9-5.5z" />
                 </svg>
               </span>
+              {v.playHref && (
+                <span className="kilig-glow-bg absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-plum">
+                  ▶ Laruin
+                </span>
+              )}
               <span className="absolute inset-x-0 bottom-0 p-3 text-left text-sm font-semibold leading-tight text-cream">
                 {v.label}
               </span>
-            </button>
-          </div>
-        ))}
+            </>
+          );
+          const shell =
+            "group relative block aspect-[9/16] w-full overflow-hidden rounded-2xl border border-plum-700";
+          return (
+            <div key={v.slug} className={item}>
+              {v.playHref ? (
+                <Link
+                  href={v.playHref}
+                  aria-label={`Laruin: ${v.label}`}
+                  className={shell}
+                >
+                  {face}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setActive(v)}
+                  aria-label={`Panoorin: ${v.label}`}
+                  className={shell}
+                >
+                  {face}
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {active && (
