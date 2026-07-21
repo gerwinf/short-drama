@@ -22,6 +22,9 @@ export const enemies: Story = {
   slug: "enemies",
   title: "Enemies-to-Lovers",
   subtitle: "Ikaw ang bida.",
+  poster: "/play/en-hook.jpg",
+  logline:
+    "Ang kaaway mo sa opisina — siya pala ang blind date mo. Tutuloy ka ba, o tatakbo?",
   start: "hook",
   resolution: {
     axisA: "tigas",

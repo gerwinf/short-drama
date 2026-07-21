@@ -68,6 +68,8 @@ export type Story = {
   slug: string; // URL segment under /play
   title: string;
   subtitle?: string;
+  poster: string; // card image on the /play chooser
+  logline: string; // one-line Taglish hook on the chooser card
   start: string;
   resolution: EndingResolution;
   nodes: Record<string, StoryNode>;
