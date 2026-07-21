@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { isValidToken, DASH_COOKIE } from "@/lib/auth";
 import { getSubmissions, getEvents } from "@/lib/store";
+import { isUnreachable } from "@/lib/deliverability";
 import {
   QUESTIONS,
   VERDICTS,
@@ -222,6 +223,30 @@ export default async function Dashboard() {
   // not just the aggregate rate above. Joins price events to signups by email.
   const wtp = wtpByEmail(events);
 
+  // Lead reachability + WTP integrity. 15 of the first 100 emails hard-bounced
+  // (fabricated/mistyped addresses — the quiz never verifies email). An
+  // unreachable address is a fake lead, so it inflates BOTH the signup count
+  // and the reserve rate. Recompute WTP over reachable addresses only to see
+  // whether the headline number survives.
+  const leadsUnreachable = subs.filter((s) => isUnreachable(s.email)).length;
+  const leadsReachable = subs.length - leadsUnreachable;
+
+  let resOk = 0;
+  let resBad = 0;
+  let sawOk = 0;
+  let sawBad = 0;
+  for (const [email, entry] of wtp) {
+    const bad = isUnreachable(email);
+    if (bad) sawBad++;
+    else sawOk++;
+    if (entry.status === "reserved") {
+      if (bad) resBad++;
+      else resOk++;
+    }
+  }
+  // Events predating per-email tagging have no email, so they can't be joined.
+  const wtpUnjoinable = priceViews.length - (sawOk + sawBad);
+
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const recent = [...subs].reverse();
 
@@ -340,6 +365,60 @@ export default async function Dashboard() {
             The signal free signups can’t give. Below the pass bar, the audience
             likes it free but won’t pay — a red flag worth catching before
             production spend.
+          </p>
+        </div>
+
+        {/* Lead reachability — is the WTP signal built on real humans? */}
+        <div className="mt-4 rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
+          <p className="text-sm font-semibold text-cream">
+            Lead reachability &amp; WTP integrity
+          </p>
+          <p className="mt-1 text-xs text-fog/70">
+            15 of the first 100 emails hard-bounced — fabricated or mistyped
+            addresses. An unreachable address is a fake lead, so it inflates both
+            the signup count and the reserve rate.
+          </p>
+          <div className="mt-3 flex flex-col gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-fog">Signups with a known-bad address</span>
+              <span className="text-cream">
+                {leadsUnreachable} of {subs.length} ·{" "}
+                {pct(leadsUnreachable, subs.length)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-fog">Reservers — reachable</span>
+              <span className="text-cream">{resOk}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-fog">Reservers — unreachable 🚩</span>
+              <span className={resBad > 0 ? "text-rose" : "text-cream"}>
+                {resBad}
+              </span>
+            </div>
+            <div className="mt-1 flex justify-between border-t border-plum-700 pt-2">
+              <span className="text-fog">
+                WTP rate, reachable only
+                <span className="ml-2 text-fog/50">
+                  vs {pct(reserves.length, priceViews.length)} raw
+                </span>
+              </span>
+              <span className="font-semibold text-cream">
+                {resOk}/{sawOk} · {pct(resOk, sawOk)}
+              </span>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-fog/70">
+            If the reachable-only rate holds near the raw rate, the WTP signal is
+            real. If it collapses, the headline number was people who typed a
+            fake email to finish the quiz.
+            {wtpUnjoinable > 0 && (
+              <>
+                {" "}
+                {wtpUnjoinable} price view(s) predate per-email tagging and
+                can&apos;t be joined — excluded above, not counted as either.
+              </>
+            )}
           </p>
         </div>
 
