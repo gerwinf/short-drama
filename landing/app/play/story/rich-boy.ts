@@ -9,9 +9,17 @@ import type { Story } from "./types";
 // Doña Isabel (Mateo's mother, the kontrabida matriarch).
 export const richBoy: Story = {
   id: "rich-boy",
+  slug: "rich-boy",
   title: "Rich Boy Next Door",
   subtitle: "Ikaw ang bida.",
   start: "hook",
+  resolution: {
+    axisA: "bold",
+    axisB: "sweet",
+    endingA: "ending-bold",
+    endingB: "ending-sweet",
+    endingTie: "ending-twist",
+  },
   nodes: {
     hook: {
       id: "hook",

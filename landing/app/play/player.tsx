@@ -12,7 +12,9 @@ import TheOtherPath from "./components/TheOtherPath";
 import EndingCard from "./components/EndingCard";
 
 function mergeAffinity(a: Affinity, b?: Affinity): Affinity {
-  return { bold: (a.bold ?? 0) + (b?.bold ?? 0), sweet: (a.sweet ?? 0) + (b?.sweet ?? 0) };
+  const out: Affinity = { ...a };
+  for (const [axis, n] of Object.entries(b ?? {})) out[axis] = (out[axis] ?? 0) + n;
+  return out;
 }
 
 // How long a caption needs to actually be read, in ms. Taglish narration runs
@@ -102,7 +104,7 @@ export default function Player({ story }: { story: Story }) {
         value: `${option.label}${expired ? " (auto)" : ""}`,
       });
 
-      const next = option.next === "@ending" ? resolveEnding(merged) : option.next;
+      const next = option.next === "@ending" ? resolveEnding(story, merged) : option.next;
       const other = node.choice?.options.find((o) => o !== option && o.teaser);
       if (other?.teaser) {
         setPending({ next, teaser: other.teaser });
@@ -110,7 +112,7 @@ export default function Player({ story }: { story: Story }) {
         goTo(next);
       }
     },
-    [affinity, node, nodeId, goTo],
+    [affinity, node, nodeId, goTo, story],
   );
 
   if (!node) return null;

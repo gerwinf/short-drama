@@ -16,7 +16,9 @@ export type Media = {
   mood?: Mood;
 };
 
-export type Affinity = { bold?: number; sweet?: number };
+// A free-form axis map, so each episode picks its own emotional axes:
+// Rich Boy runs bold/sweet, Enemies-to-Lovers runs tigas (pride) / puso (heart).
+export type Affinity = Record<string, number>;
 
 export type Choice = {
   label: string;
@@ -52,21 +54,32 @@ export type StoryNode = {
   ending?: Ending;
 };
 
+// Which ending an accumulated affinity leads to, declared per episode.
+export type EndingResolution = {
+  axisA: string;
+  axisB: string;
+  endingA: string; // node id when axisA wins outright
+  endingB: string; // node id when axisB wins outright
+  endingTie: string; // node id when the viewer split between the two
+};
+
 export type Story = {
   id: string;
+  slug: string; // URL segment under /play
   title: string;
   subtitle?: string;
   start: string;
+  resolution: EndingResolution;
   nodes: Record<string, StoryNode>;
 };
 
-// Resolve which ending an accumulated affinity leads to.
-// Decisive same-lane choices → that lane's ending; a split (one bold, one
-// sweet) ties → the "twist" cliffhanger. See rich-boy.ts affinity weights.
-export function resolveEnding(a: Affinity): string {
-  const bold = a.bold ?? 0;
-  const sweet = a.sweet ?? 0;
-  if (bold > sweet) return "ending-bold";
-  if (sweet > bold) return "ending-sweet";
-  return "ending-twist";
+// Decisive same-axis choices → that axis's ending; a split ties → the
+// "twist" cliffhanger. Weights are tuned per episode so a tie is reachable.
+export function resolveEnding(story: Story, a: Affinity): string {
+  const { axisA, axisB, endingA, endingB, endingTie } = story.resolution;
+  const A = a[axisA] ?? 0;
+  const B = a[axisB] ?? 0;
+  if (A > B) return endingA;
+  if (B > A) return endingB;
+  return endingTie;
 }

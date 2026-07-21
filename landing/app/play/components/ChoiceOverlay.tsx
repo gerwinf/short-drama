@@ -50,9 +50,16 @@ export default function ChoiceOverlay({
   const seconds = Math.ceil(remaining / 1000);
   const R = 20;
   const C = 2 * Math.PI * R;
+  // Three-option decisions need tighter vertical rhythm or the last card is
+  // clipped off the bottom on short phones.
+  const dense = decision.options.length > 2;
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-20 px-5 pb-7 pt-24">
+    <div
+      className={`absolute inset-x-0 bottom-0 z-20 px-5 ${
+        dense ? "pb-5 pt-12" : "pb-7 pt-24"
+      }`}
+    >
       {/* split-shimmer sweep signalling the fork */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="animate-split-shimmer absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -82,17 +89,23 @@ export default function ChoiceOverlay({
         </span>
       </div>
 
-      <p className="relative mb-4 max-w-[34ch] text-[15px] font-semibold leading-snug text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+      <p
+        className={`relative max-w-[34ch] text-[15px] font-semibold leading-snug text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] ${
+          dense ? "mb-3" : "mb-4"
+        }`}
+      >
         {decision.prompt}
       </p>
 
-      <div className="relative flex flex-col gap-3">
+      <div className={`relative flex flex-col ${dense ? "gap-2" : "gap-3"}`}>
         {decision.options.map((opt, i) => (
           <button
             key={opt.label}
             onClick={() => choose(opt, i)}
             style={{ animationDelay: `${i * 90}ms` }}
-            className={`animate-choice-rise group relative w-full overflow-hidden rounded-2xl border px-4 py-4 text-left backdrop-blur-md transition active:scale-[0.98] ${
+            className={`animate-choice-rise group relative w-full overflow-hidden rounded-2xl border px-4 text-left backdrop-blur-md transition active:scale-[0.98] ${
+              dense ? "py-3" : "py-4"
+            } ${
               opt.premium
                 ? "border-gold/70 bg-plum-800/80 shadow-[0_0_0_1px_rgba(255,182,39,0.25)]"
                 : "border-white/20 bg-plum-800/70 hover:border-rose/60"
