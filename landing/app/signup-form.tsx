@@ -187,7 +187,7 @@ export default function SignupForm() {
         <div className="flex flex-1 flex-col justify-center overflow-y-auto px-5 py-6">
           {done ? (
             reserved === null ? (
-              <PriceGate plan={plan} onResolve={setReserved} />
+              <PriceGate plan={plan} email={email} onResolve={setReserved} />
             ) : (
               <Success email={email} reserved={reserved} plan={plan} />
             )
@@ -300,11 +300,16 @@ function Step({
 // intent-to-pay signal. Nothing is charged; there are no payment fields.
 function PriceGate({
   plan,
+  email,
   onResolve,
 }: {
   plan: PricePlan;
+  email: string;
   onResolve: (reserved: boolean) => void;
 }) {
+  // The gate shows after email capture, so we stamp every WTP event with the
+  // signup's email — that's what lets the dashboard show WHICH users reserved,
+  // not just the aggregate rate.
   const viewed = useRef(false);
   useEffect(() => {
     if (viewed.current) return;
@@ -312,8 +317,9 @@ function PriceGate({
     track("price_view", {
       plan: plan.id,
       value: `${plan.symbol}${plan.amount}`,
+      email,
     });
-  }, [plan]);
+  }, [plan, email]);
 
   const priceLabel = `${plan.symbol}${plan.amount}`;
 
@@ -338,7 +344,7 @@ function PriceGate({
 
       <button
         onClick={() => {
-          track("reserve_click", { plan: plan.id, value: priceLabel });
+          track("reserve_click", { plan: plan.id, value: priceLabel, email });
           onResolve(true);
         }}
         className="kilig-cta-shadow mt-6 w-full rounded-full bg-rose px-6 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
@@ -349,7 +355,7 @@ function PriceGate({
 
       <button
         onClick={() => {
-          track("reserve_skip", { plan: plan.id });
+          track("reserve_skip", { plan: plan.id, email });
           onResolve(false);
         }}
         className="mt-4 text-sm text-fog hover:text-cream"
