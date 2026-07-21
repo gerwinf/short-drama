@@ -15,6 +15,14 @@ function mergeAffinity(a: Affinity, b?: Affinity): Affinity {
   return { bold: (a.bold ?? 0) + (b?.bold ?? 0), sweet: (a.sweet ?? 0) + (b?.sweet ?? 0) };
 }
 
+// How long a caption needs to actually be read, in ms. Taglish narration runs
+// ~120-180 characters; a fixed delay either rushed the long ones or dragged the
+// short ones, so scale with length (~70ms/char) plus a beat to take in the image.
+function readingMs(caption?: string): number {
+  const chars = caption?.length ?? 0;
+  return Math.min(13000, Math.max(4500, 1200 + chars * 70));
+}
+
 export default function Player({ story }: { story: Story }) {
   const [history, setHistory] = useState<string[]>([story.start]);
   const [affinity, setAffinity] = useState<Affinity>({});
@@ -58,18 +66,19 @@ export default function Player({ story }: { story: Story }) {
     if (node?.ending) playTrack("play_ending", { node: node.id, value: node.ending.key });
   }, [node]);
 
-  // Choice nodes raise their overlay after a beat (state set only in the callback).
+  // Choice nodes raise their overlay only once the caption has had time to be
+  // read — the overlay replaces the caption, so revealing early loses the line.
   useEffect(() => {
     if (!node?.choice) return;
-    // Let the caption breathe before the choice UI covers it.
-    const t = setTimeout(() => setRevealFor(node.id), 3200);
+    const t = setTimeout(() => setRevealFor(node.id), readingMs(node.caption));
     return () => clearTimeout(t);
   }, [node]);
 
-  // Linear scenes auto-advance.
+  // Linear scenes auto-advance, never before the caption is readable.
   useEffect(() => {
     if (!node || node.ending || node.choice || !node.defaultNext) return;
-    const t = setTimeout(() => goTo(node.defaultNext!), node.advanceMs ?? 6000);
+    const delay = Math.max(node.advanceMs ?? 6000, readingMs(node.caption));
+    const t = setTimeout(() => goTo(node.defaultNext!), delay);
     return () => clearTimeout(t);
   }, [node, goTo]);
 
@@ -110,6 +119,8 @@ export default function Player({ story }: { story: Story }) {
   const flashing = !!pending;
   const deciding = !!node.choice && revealFor === nodeId && !flashing;
   const isLinear = !node.choice && !ended && !flashing;
+  // Choice node whose caption is still showing — the overlay hasn't risen yet.
+  const awaitingChoice = !!node.choice && !deciding && !ended && !flashing;
   const showCaption = !deciding && !ended && !flashing;
 
   return (
@@ -119,6 +130,19 @@ export default function Player({ story }: { story: Story }) {
         caption={showCaption ? node.caption : undefined}
         dim={deciding || ended}
       />
+
+      {/* tap to summon the choice early — don't make fast readers wait it out */}
+      {awaitingChoice && (
+        <button
+          onClick={() => setRevealFor(node.id)}
+          aria-label="Sumagot na"
+          className="absolute inset-0 z-10"
+        >
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 animate-pulse text-[11px] font-medium text-cream/60">
+            tap para sumagot →
+          </span>
+        </button>
+      )}
 
       {/* tap-to-continue for linear scenes (auto-advance still runs) */}
       {isLinear && node.defaultNext && (
