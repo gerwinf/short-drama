@@ -12,6 +12,9 @@ export const richBoy: Story = {
   slug: "rich-boy",
   title: "Rich Boy Next Door",
   subtitle: "Ikaw ang bida.",
+  poster: "/play/hook-poster.jpg",
+  logline:
+    "Katabi mong lumaki si Mateo — tagapagmana pala ng Villaluna. Papayag ka bang makita kayo ng buong kalye?",
   start: "hook",
   resolution: {
     axisA: "bold",
