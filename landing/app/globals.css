@@ -128,16 +128,16 @@ body {
   }
 }
 .kb-in {
-  animation: kb-in 14s ease-out forwards;
+  animation: kb-in 20s ease-out forwards;
 }
 .kb-out {
-  animation: kb-out 14s ease-out forwards;
+  animation: kb-out 20s ease-out forwards;
 }
 .kb-pan-right {
-  animation: kb-pan-right 14s ease-in-out forwards;
+  animation: kb-pan-right 20s ease-in-out forwards;
 }
 .kb-pan-left {
-  animation: kb-pan-left 14s ease-in-out forwards;
+  animation: kb-pan-left 20s ease-in-out forwards;
 }
 
 /* Scene media fades in so a decode gap never flashes hard */

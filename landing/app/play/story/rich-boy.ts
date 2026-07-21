@@ -24,7 +24,7 @@ export const richBoy: Story = {
       caption:
         "Katabi mong lumaki si Mateo. Ngayon, siya na ang tagapagmana ng Villaluna empire — at ikaw pa rin ang batang babae sa tapat ng kanilang gate. Pero ngayong gabi, hinihintay ka niya.",
       kiligBump: 15,
-      advanceMs: 6500,
+      advanceMs: 12000,
       defaultNext: "rooftop",
     },
 
@@ -43,7 +43,7 @@ export const richBoy: Story = {
       choice: {
         prompt:
           "Inaalok ka niyang ihatid — dadaan kayo sa harap mismo ng mga tsismosang kapitbahay. Sasakay ka ba?",
-        timerMs: 9000,
+        timerMs: 15000,
         options: [
           {
             label: "Sakay na — wala akong pakialam 🚗",
@@ -68,15 +68,14 @@ export const richBoy: Story = {
       id: "after_ride",
       media: {
         type: "image",
-        src: "/play/scene-neon-rain.jpg",
+        src: "/play/scene-car-ride.jpg",
         kenBurns: "panRight",
-        mood: "romantic",
-        objectPosition: "center 40%",
+        objectPosition: "center 55%",
       },
       caption:
         "Hinatak ka niya sa kotse, umandar sa ulan at neon. Nakita kayo ng buong kalye — at ngiti ka nang ngiti. “Hayaan mong makita nila,” sabi niya.",
       kiligBump: 20,
-      advanceMs: 6000,
+      advanceMs: 11000,
       defaultNext: "confront",
     },
 
@@ -92,7 +91,7 @@ export const richBoy: Story = {
       caption:
         "Naglakad kayo. Huminto sa isang fishball stand, tawanan sa gitna ng usok at ilaw. Simple lang. Pero parang tama.",
       kiligBump: 18,
-      advanceMs: 6000,
+      advanceMs: 11000,
       defaultNext: "confront",
     },
 
@@ -100,10 +99,10 @@ export const richBoy: Story = {
       id: "confront",
       media: {
         type: "image",
-        src: "/play/scene-rooftop.jpg",
+        // Already shot cold and rain-dark — no villain grade needed on top.
+        src: "/play/scene-confront.jpg",
         kenBurns: "out",
-        mood: "villain",
-        objectPosition: "center 30%",
+        objectPosition: "center 45%",
       },
       caption:
         "Paglingon mo, naghihintay na si Doña Isabel — ang ina ni Mateo. “Alam mo ba kung magkano ang apelyidong sinisira mo? Lumayo ka sa anak ko.”",
@@ -111,7 +110,7 @@ export const richBoy: Story = {
       choice: {
         prompt:
           "Nakatingin sa'yo si Mateo, hawak ang kamay mo. Sasagutin mo ba ang kanyang ina?",
-        timerMs: 10000,
+        timerMs: 16000,
         options: [
           {
             label: "Tapatan mo siya 🔥",
@@ -137,10 +136,10 @@ export const richBoy: Story = {
       id: "ending-bold",
       media: {
         type: "image",
-        src: "/play/scene-portrait.jpg",
+        src: "/play/scene-ending-bold.jpg",
         kenBurns: "in",
         mood: "payoff",
-        objectPosition: "center 55%",
+        objectPosition: "center 40%",
       },
       kiligBump: 30,
       ending: {
@@ -156,10 +155,10 @@ export const richBoy: Story = {
       id: "ending-sweet",
       media: {
         type: "image",
-        src: "/play/scene-beach.jpg",
+        src: "/play/scene-ending-sweet.jpg",
         kenBurns: "out",
         mood: "romantic",
-        objectPosition: "center 40%",
+        objectPosition: "center 50%",
       },
       kiligBump: 28,
       ending: {
@@ -175,10 +174,10 @@ export const richBoy: Story = {
       id: "ending-twist",
       media: {
         type: "image",
-        src: "/play/scene-neon-rain.jpg",
+        // Neon-noir grade is baked in — leave it ungraded.
+        src: "/play/scene-ending-twist.jpg",
         kenBurns: "in",
-        mood: "villain",
-        objectPosition: "center 35%",
+        objectPosition: "center 45%",
       },
       kiligBump: 25,
       ending: {
