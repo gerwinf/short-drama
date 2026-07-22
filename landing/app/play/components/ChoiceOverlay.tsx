@@ -89,13 +89,16 @@ export default function ChoiceOverlay({
         </span>
       </div>
 
-      <p
-        className={`relative max-w-[34ch] text-[15px] font-semibold leading-snug text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] ${
-          dense ? "mb-3" : "mb-4"
-        }`}
-      >
-        {decision.prompt}
-      </p>
+      <div className={`relative ${dense ? "mb-3" : "mb-4"}`}>
+        <p className="max-w-[26ch] text-balance font-display text-2xl font-semibold leading-tight text-cream drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+          {decision.prompt}
+        </p>
+        {decision.sub && (
+          <p className="mt-1.5 max-w-[30ch] text-[13px] font-medium leading-snug text-cream/65 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            {decision.sub}
+          </p>
+        )}
+      </div>
 
       <div className={`relative flex flex-col ${dense ? "gap-2" : "gap-3"}`}>
         {decision.options.map((opt, i) => (

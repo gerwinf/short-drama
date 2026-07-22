@@ -32,6 +32,7 @@ export type Choice = {
 
 export type Decision = {
   prompt: string;
+  sub?: string; // small dimmed line under the prompt, only when truly needed
   timerMs: number;
   options: Choice[];
 };
@@ -46,7 +47,11 @@ export type Ending = {
 export type StoryNode = {
   id: string;
   media: Media;
+  // Keep captions short — one idea, subtitle-sized. This plays on cheap phones,
+  // one-handed; paragraphs read as homework. Dialogue beats narration.
   caption?: string;
+  sub?: string; // optional small dimmed context line
+
   kiligBump?: number; // added to the Kilig Meter on entering this node
   advanceMs?: number; // auto-advance delay for non-choice nodes (ms)
   choice?: Decision;

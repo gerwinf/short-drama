@@ -7,14 +7,16 @@ import type { Story } from "./types";
 //     a climax image, not an opening), then flashes back and plays forward into
 //     it. The "puso" ending pays that cold open off.
 //  2. Decision 1 is the dilemma the signup quiz has already been testing on real
-//     users, verbatim (see VERDICTS.enemies in lib/types.ts) — the demo delivers
-//     the exact question people answered.
+//     users. The OPTIONS are kept verbatim (they're what we compare against the
+//     quiz answers); only the framing prompt is shortened for mobile.
 //
 // Axis: tigas (pride) vs puso (heart). Weights let a split reach the tie ending:
 //   tuloy(puso2)  + iligtas(puso2)  -> puso
 //   alis(tigas2)  + ilaban(tigas2)  -> tigas
 //   any cross pairing              -> tie
 //   panggap(1/1) tips whichever way Decision 2 goes.
+//
+// Copy is subtitle-short by design — see rich-boy.ts.
 //
 // Cast: Jaz (the bida) and Rafa (the office rival).
 export const enemies: Story = {
@@ -23,8 +25,7 @@ export const enemies: Story = {
   title: "Enemies-to-Lovers",
   subtitle: "Ikaw ang bida.",
   poster: "/play/en-hook.jpg",
-  logline:
-    "Ang kaaway mo sa opisina — siya pala ang blind date mo. Tutuloy ka ba, o tatakbo?",
+  logline: "Ang kaaway mo sa opisina — blind date mo pala.",
   start: "hook",
   resolution: {
     axisA: "tigas",
@@ -41,10 +42,9 @@ export const enemies: Story = {
         src: "/play/en-hook.mp4",
         poster: "/play/en-hook.jpg",
       },
-      caption:
-        "Bago mo 'ko husgahan — tatlong oras bago 'to, kaaway ko pa siya. Si Rafa. Ang katunggali ko sa promotion. Ngayon, basang-basa kami sa ulan, at hindi ko alam kung sasampalin ko siya o hahalikan.",
+      caption: "Tatlong oras bago 'to, kaaway ko pa siya.",
       kiligBump: 14,
-      advanceMs: 12000,
+      advanceMs: 7000,
       defaultNext: "office",
     },
 
@@ -56,10 +56,10 @@ export const enemies: Story = {
         kenBurns: "panLeft",
         objectPosition: "center 45%",
       },
-      caption:
-        "Anim na buwan kaming nag-aagawan sa iisang promotion. Bawat email, bawat meeting — patayan. “‘Wag mo nang isipin 'yon,” sabi ng barkada ko. “May inayos kaming blind date para sa'yo.”",
+      caption: "Anim na buwan. Iisang promotion.",
+      sub: "“May blind date ka mamaya,” sabi ng barkada.",
       kiligBump: 10,
-      advanceMs: 11000,
+      advanceMs: 6500,
       defaultNext: "reveal",
     },
 
@@ -72,35 +72,32 @@ export const enemies: Story = {
         mood: "romantic",
         objectPosition: "center 40%",
       },
-      caption:
-        "Umupo ang blind date ko sa harap ko. Nang tumingala ako — siya. Si Rafa. Namutla kaming dalawa.",
+      caption: "“Ikaw?!”",
+      sub: "Ang blind date mo — ang kaaway mo sa opisina.",
       kiligBump: 18,
       choice: {
-        // Verbatim from the signup quiz (VERDICTS.enemies), same option order.
-        prompt:
-          "Ang kaaway mo sa opisina — siya pala ang blind date na inayos ng barkada mo. Ano'ng gagawin mo?",
+        // Options verbatim from the signup quiz (VERDICTS.enemies), same order,
+        // so taps here are comparable to the quiz answers.
+        prompt: "Ano'ng gagawin mo?",
         timerMs: 16000,
         options: [
           {
             label: "Tutuloy ako sa date",
             next: "after_tuloy",
             affinity: { puso: 2 },
-            teaser:
-              "Ang ibang landas: tatayo ka't aalis bago pa siya makapagsalita.",
+            teaser: "Tatayo ka't aalis bago siya makapagsalita.",
           },
           {
             label: "Aalis ako bago niya ako makita",
             next: "after_alis",
             affinity: { tigas: 2 },
-            teaser:
-              "Ang ibang landas: uupo ka, iinom ng alak, at malalaman mo kung sino talaga siya.",
+            teaser: "Uupo ka. Malalaman mo kung sino talaga siya.",
           },
           {
             label: "Magpapanggap akong hindi ko siya kilala",
             next: "after_panggap",
             affinity: { tigas: 1, puso: 1 },
-            teaser:
-              "Ang ibang landas: haharapin mo siya nang diretso — walang tago, walang arte.",
+            teaser: "Haharapin mo siya nang diretso.",
           },
         ],
       },
@@ -116,10 +113,10 @@ export const enemies: Story = {
         mood: "romantic",
         objectPosition: "center 50%",
       },
-      caption:
-        "Tumuloy kayo. Dalawang oras na tawanan — at doon mo lang narinig ang parte ng kwento niyang hindi niya sinasabi sa opisina.",
+      caption: "Dalawang oras na tawanan.",
+      sub: "May hindi pala siya sinasabi sa opisina.",
       kiligBump: 16,
-      advanceMs: 11000,
+      advanceMs: 6500,
       defaultNext: "stakes",
     },
 
@@ -131,10 +128,10 @@ export const enemies: Story = {
         kenBurns: "panRight",
         objectPosition: "center 55%",
       },
-      caption:
-        "Tumayo ka't lumabas. Pero sa may pinto, narinig mo siyang tumawag ng pangalan mo — hindi 'yung pang-opisinang tono. Iba.",
+      caption: "“Jaz.”",
+      sub: "Iba ang tono. Hindi pang-opisina.",
       kiligBump: 16,
-      advanceMs: 11000,
+      advanceMs: 6000,
       defaultNext: "stakes",
     },
 
@@ -147,10 +144,10 @@ export const enemies: Story = {
         mood: "romantic",
         objectPosition: "center 50%",
       },
-      caption:
-        "“Hi, ako nga pala si Jaz.” Sabay taas ng menu. Pumayag siya sa laro — dalawang tao, nagkukunwaring hindi magkakilala, sa loob ng dalawang oras.",
+      caption: "“Hi, ako nga pala si Jaz.”",
+      sub: "Pumayag siya sa laro.",
       kiligBump: 16,
-      advanceMs: 11000,
+      advanceMs: 6000,
       defaultNext: "stakes",
     },
 
@@ -162,12 +159,11 @@ export const enemies: Story = {
         kenBurns: "in",
         objectPosition: "center 50%",
       },
-      caption:
-        "Kinabukasan, nasa mesa mo ang incident report — ang pagkakamaling ikakatalo niya sa promotion. Alam mong kaya niyang ipaliwanag. Alam mo ring bukas ang announcement.",
+      caption: "Nasa kamay mo ang ikakatalo niya.",
+      sub: "Bukas ang announcement ng promotion.",
       kiligBump: 12,
       choice: {
-        prompt:
-          "Nasa kamay mo kung sino ang mananalo bukas. Ano'ng gagawin mo sa report?",
+        prompt: "Ano'ng gagawin mo sa report?",
         timerMs: 16000,
         options: [
           {
@@ -175,15 +171,13 @@ export const enemies: Story = {
             next: "@ending",
             affinity: { tigas: 2 },
             premium: true,
-            teaser:
-              "Ang ibang landas: sisirain mo ang report — at walang makakaalam na ikaw ang nagligtas sa kanya.",
+            teaser: "Sisirain mo ang report. Walang makakaalam.",
           },
           {
             label: "Iligtas siya",
             next: "@ending",
             affinity: { puso: 2 },
-            teaser:
-              "Ang ibang landas: isusumite mo 'to, mananalo ka — at matututunan mong ang panalo ay puwedeng malamig.",
+            teaser: "Mananalo ka. Pero malamig ang panalo.",
           },
         ],
       },
@@ -202,9 +196,8 @@ export const enemies: Story = {
       ending: {
         key: "bold",
         title: "Panalo Ka. Mag-isa.",
-        line: "Sa'yo ang corner office. Sa'yo ang plaka. Pero pagpasok mo kinabukasan, wala nang nakaupo sa mesa sa harap mo — at ngayon mo lang napansin kung gaano katahimik ang panalo.",
-        otherPath:
-          "May bersyon nito kung saan sinira mo ang report — at siya ang unang bumati sa'yo sa ulan.",
+        line: "Sa'yo ang corner office. Wala nang nakaupo sa harap mo.",
+        otherPath: "May bersyon kung saan sinira mo ang report.",
       },
     },
 
@@ -221,9 +214,8 @@ export const enemies: Story = {
       ending: {
         key: "sweet",
         title: "Sa Ulan",
-        line: "Hinabol ka niya palabas, basang-basa, hawak ang report na sana'y ikakatalo niya. “Bakit mo 'ko iniligtas?” Hindi mo siya sinagot. Hindi na kailangan — nandito na tayo sa umpisa ng kwento.",
-        otherPath:
-          "May bersyon nito kung saan ipinasa mo ang report at nanalo ka. Mas tahimik. Mas malamig.",
+        line: "“Bakit mo 'ko iniligtas?” Hindi mo siya sinagot.",
+        otherPath: "May bersyon kung saan ipinasa mo ang report. Mas malamig.",
       },
     },
 
@@ -239,9 +231,8 @@ export const enemies: Story = {
       ending: {
         key: "twist",
         title: "Itutuloy…",
-        line: "Pagdating mo sa opisina, wala na ang pangalan niya sa listahan. May naiwang sulat sa mesa mo: inurong niya ang application niya — noong gabi ng blind date pa. Ang tanong ngayon: bakit?",
-        otherPath:
-          "Dalawang malinaw na landas ang hindi mo pinili. Balikan para malaman kung sino talaga ang lumaban para kanino.",
+        line: "Inurong niya ang application niya — noong gabi pa ng date.",
+        otherPath: "Dalawang landas ang hindi mo pinili. Balikan.",
       },
     },
   },
