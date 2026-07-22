@@ -212,7 +212,17 @@ export default function Home() {
               }`}
             >
               <div className="mx-auto w-3/5 max-w-[300px] md:w-full">
-                <PhoneShot src={f.img} alt={`${f.title} screen`} />
+                <PhoneShot
+                  src={f.img}
+                  alt={`${f.title} screen`}
+                  // 03 is a mockup with a black canvas margin; the rest are
+                  // edge-to-edge, so only it needs the crop (see PhoneShot).
+                  cropRatio={
+                    f.img === "/shots/03-decision-sagot-mo.jpg"
+                      ? "529 / 1094"
+                      : undefined
+                  }
+                />
               </div>
               <div>
                 <span
