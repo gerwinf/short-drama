@@ -247,7 +247,12 @@ export default async function Dashboard() {
   // Events predating per-email tagging have no email, so they can't be joined.
   const wtpUnjoinable = priceViews.length - (sawOk + sawBad);
 
+  // Full UTM attribution. utm_content carries the per-ad slug (ad-03-…), so this
+  // is what actually answers "which ad produced this signup" — utm_source alone
+  // lumps every Meta ad into one "facebook" bucket.
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
+  const utmCampaignRows = countBy(subs, (s) => s.utm.utm_campaign || "(none)");
+  const utmContentRows = countBy(subs, (s) => s.utm.utm_content || "(none)");
   const recent = [...subs].reverse();
 
   return (
@@ -438,6 +443,16 @@ export default async function Dashboard() {
             />
           ))}
           <Breakdown title="Ad source (utm_source)" total={signups} rows={utmRows} />
+          <Breakdown
+            title="Which ad drove the signup (utm_content)"
+            total={signups}
+            rows={utmContentRows}
+          />
+          <Breakdown
+            title="Campaign (utm_campaign)"
+            total={signups}
+            rows={utmCampaignRows}
+          />
           {/* Vibe-matched verdicts: each respondent answers only the dilemma
               for the vibe they picked, so totals are per-verdict, not global. */}
           {Object.values(VERDICTS).map((q) => {
