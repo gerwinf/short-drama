@@ -24,10 +24,12 @@ const MOOD_FILTER: Record<string, string> = {
 export default function SceneCard({
   node,
   caption,
+  sub,
   dim = false,
 }: {
   node: StoryNode;
   caption?: string;
+  sub?: string;
   dim?: boolean; // extra darken while a decision/ending overlay is up
 }) {
   const { media } = node;
@@ -77,12 +79,20 @@ export default function SceneCard({
       <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-transparent to-ink/95" />
       {dim && <div className="absolute inset-0 bg-ink/45 transition-opacity" />}
 
-      {/* caption */}
+      {/* caption — few words, big type; `sub` carries any rare context */}
       {caption && (
         <div className="absolute inset-x-0 bottom-0 px-6 pb-[env(safe-area-inset-bottom)]">
-          <p className="mx-auto max-w-[34ch] pb-6 text-center text-[15px] font-medium leading-relaxed text-cream drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] sm:text-base">
-            {caption}
-          </p>
+          <div className="mx-auto max-w-[26ch] pb-6 text-center">
+            {/* text-balance keeps a stray word from orphaning onto its own line */}
+            <p className="text-balance font-display text-2xl font-semibold leading-snug text-cream drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] sm:text-3xl">
+              {caption}
+            </p>
+            {sub && (
+              <p className="mt-2 text-[13px] font-medium leading-snug text-cream/65 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                {sub}
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>

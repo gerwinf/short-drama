@@ -20,9 +20,9 @@ function mergeAffinity(a: Affinity, b?: Affinity): Affinity {
 // How long a caption needs to actually be read, in ms. Taglish narration runs
 // ~120-180 characters; a fixed delay either rushed the long ones or dragged the
 // short ones, so scale with length (~70ms/char) plus a beat to take in the image.
-function readingMs(caption?: string): number {
-  const chars = caption?.length ?? 0;
-  return Math.min(13000, Math.max(4500, 1200 + chars * 70));
+function readingMs(...parts: (string | undefined)[]): number {
+  const chars = parts.filter(Boolean).join(" ").length;
+  return Math.min(13000, Math.max(4000, 1200 + chars * 70));
 }
 
 export default function Player({ story }: { story: Story }) {
@@ -72,14 +72,14 @@ export default function Player({ story }: { story: Story }) {
   // read — the overlay replaces the caption, so revealing early loses the line.
   useEffect(() => {
     if (!node?.choice) return;
-    const t = setTimeout(() => setRevealFor(node.id), readingMs(node.caption));
+    const t = setTimeout(() => setRevealFor(node.id), readingMs(node.caption, node.sub));
     return () => clearTimeout(t);
   }, [node]);
 
   // Linear scenes auto-advance, never before the caption is readable.
   useEffect(() => {
     if (!node || node.ending || node.choice || !node.defaultNext) return;
-    const delay = Math.max(node.advanceMs ?? 6000, readingMs(node.caption));
+    const delay = Math.max(node.advanceMs ?? 6000, readingMs(node.caption, node.sub));
     const t = setTimeout(() => goTo(node.defaultNext!), delay);
     return () => clearTimeout(t);
   }, [node, goTo]);
@@ -130,6 +130,7 @@ export default function Player({ story }: { story: Story }) {
       <SceneCard
         node={node}
         caption={showCaption ? node.caption : undefined}
+        sub={showCaption ? node.sub : undefined}
         dim={deciding || ended}
       />
 
