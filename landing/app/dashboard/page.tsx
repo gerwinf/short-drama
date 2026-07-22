@@ -9,7 +9,6 @@ import {
   labelFor,
   wtpByEmail,
   wtpFor,
-  type Submission,
 } from "@/lib/types";
 import {
   Broadcast,
@@ -132,10 +131,10 @@ function StepFunnel({
   );
 }
 
-function countBy(subs: Submission[], key: (s: Submission) => string) {
+function countBy<T>(items: T[], key: (x: T) => string) {
   const map = new Map<string, number>();
-  for (const s of subs) {
-    const k = key(s);
+  for (const x of items) {
+    const k = key(x);
     map.set(k, (map.get(k) || 0) + 1);
   }
   return [...map.entries()]
@@ -254,6 +253,25 @@ export default async function Dashboard() {
   const utmCampaignRows = countBy(subs, (s) => s.utm.utm_campaign || "(none)");
   const utmContentRows = countBy(subs, (s) => s.utm.utm_content || "(none)");
   const recent = [...subs].reverse();
+
+  // Interactive player (/play) engagement + entry-point attribution. play_start
+  // carries meta.source from the ?from= on the launching link — internal links
+  // have no UTMs, so this is the only signal for which surface drives plays.
+  // Replays fire play_replay, so play_start counts fresh starts only.
+  const playStarts = events.filter((e) => e.type === "play_start");
+  const playEndings = events.filter((e) => e.type === "play_ending");
+  const playShares = events.filter((e) => e.type === "play_share");
+  const playReplays = events.filter((e) => e.type === "play_replay");
+  const SOURCE_LABELS: Record<string, string> = {
+    hero: "Hero CTA",
+    tile: "Vibe tile",
+    feature: "Feature card (Sagot Mo)",
+  };
+  const playSourceRows = countBy(playStarts, (e) =>
+    e.meta?.source
+      ? SOURCE_LABELS[e.meta.source] ?? e.meta.source
+      : "(untagged / direct)",
+  );
 
   return (
     <main className="min-h-[100dvh] px-5 py-8">
@@ -425,6 +443,40 @@ export default async function Dashboard() {
               </>
             )}
           </p>
+        </div>
+
+        {/* Interactive player (/play) — the try-before-signup demo */}
+        <h2 className="mt-10 text-sm font-semibold uppercase tracking-wide text-fog">
+          Interactive player (/play)
+        </h2>
+        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <StatCard
+            label="Play starts"
+            value={playStarts.length}
+            hint="episodes opened"
+          />
+          <StatCard
+            label="Endings reached"
+            value={playEndings.length}
+            hint={`${pct(playEndings.length, playStarts.length)} of starts`}
+          />
+          <StatCard
+            label="Shares"
+            value={playShares.length}
+            hint="tapped share on an ending"
+          />
+          <StatCard
+            label="Replays"
+            value={playReplays.length}
+            hint="restarted for another path"
+          />
+        </div>
+        <div className="mt-4">
+          <Breakdown
+            title="Where plays start (entry point)"
+            total={playStarts.length}
+            rows={playSourceRows}
+          />
         </div>
 
         {/* Answer breakdowns */}
