@@ -45,9 +45,9 @@ const FEATURES = [
 // Premises with a playable episode get playHref — those tiles open the real
 // interactive player; the rest still open the teaser lightbox.
 const VIBE_CLIPS = [
-  { slug: "rich-boy", label: "Rich Boy Next Door", playHref: "/play/rich-boy" },
+  { slug: "rich-boy", label: "Rich Boy Next Door", playHref: "/play/rich-boy?from=tile" },
   { slug: "amnesia", label: "Amnesia Twist" },
-  { slug: "enemies", label: "Enemies-to-Lovers", playHref: "/play/enemies" },
+  { slug: "enemies", label: "Enemies-to-Lovers", playHref: "/play/enemies?from=tile" },
   { slug: "cinderella", label: "Cinderella Teleserye" },
 ];
 
@@ -61,11 +61,35 @@ function PhoneShot({
   src,
   alt,
   priority = false,
+  cropRatio,
 }: {
   src: string;
   alt: string;
   priority?: boolean;
+  // Some /shots are device mockups rendered on a black canvas with a margin
+  // around the phone. Passing the phone's own width/height ratio (e.g.
+  // "529 / 1094", measured from the source) crops that margin via object-cover,
+  // so the rounded corners + phone-shadow glow hug the phone instead of tracing
+  // the larger black rectangle behind it.
+  cropRatio?: string;
 }) {
+  if (cropRatio) {
+    return (
+      <div
+        className="phone-shadow relative w-full overflow-hidden rounded-[1.6rem]"
+        style={{ aspectRatio: cropRatio }}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes="(max-width: 640px) 70vw, 340px"
+          className="object-cover object-center"
+        />
+      </div>
+    );
+  }
   return (
     <Image
       src={src}
@@ -128,25 +152,40 @@ export default function Home() {
             kikiligin ka.
           </p>
           <div className="mt-8">
-            <Cta>Get early access — libre 💖</Cta>
+            <Link
+              href="/play/rich-boy?from=hero"
+              data-play-cta="hero"
+              className="kilig-cta-shadow inline-flex items-center gap-2 rounded-full bg-rose px-8 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
+            >
+              ▶ Maging bida 💖
+            </Link>
           </div>
           <p className="mt-4 text-sm text-fog/80">
-            ⚡ 30 seconds lang · Libre · Mauna sa launch
+            ▶ 60 segundo · Libre · Ikaw ang pipili ng ending
           </p>
+          {/* Keep an email path above the fold: play is primary, but the Meta
+              campaign optimizes for the lead event, so never hide it entirely. */}
+          <button
+            data-kilig-open
+            className="mt-3 text-sm font-semibold text-rose underline-offset-4 hover:underline"
+          >
+            O mag-early access muna →
+          </button>
         </div>
 
         <div className="relative mx-auto flex w-full max-w-sm justify-center">
           <div className="absolute -left-2 top-10 w-1/2 rotate-[-8deg] opacity-80">
             <PhoneShot
-              src="/shots/01-onboarding-choose-your-kilig.jpg"
-              alt="Choose your first kilig onboarding screen"
+              src="/shots/02-player-kilig-meter.jpg"
+              alt="Kilig Meter player screen"
             />
           </div>
           <div className="relative z-10 w-3/4 animate-floaty md:w-4/5">
             <PhoneShot
-              src="/shots/04-share-card-ikaw-ang-bida.jpg"
-              alt="Ikaw ang Bida share card"
+              src="/shots/03-decision-sagot-mo.jpg"
+              alt="Sagot mo? decision screen — ikaw ang pipili ng ending"
               priority
+              cropRatio="529 / 1094"
             />
           </div>
         </div>
@@ -173,7 +212,17 @@ export default function Home() {
               }`}
             >
               <div className="mx-auto w-3/5 max-w-[300px] md:w-full">
-                <PhoneShot src={f.img} alt={`${f.title} screen`} />
+                <PhoneShot
+                  src={f.img}
+                  alt={`${f.title} screen`}
+                  // 03 is a mockup with a black canvas margin; the rest are
+                  // edge-to-edge, so only it needs the crop (see PhoneShot).
+                  cropRatio={
+                    f.img === "/shots/03-decision-sagot-mo.jpg"
+                      ? "529 / 1094"
+                      : undefined
+                  }
+                />
               </div>
               <div>
                 <span
@@ -194,8 +243,8 @@ export default function Home() {
                 <p className="mt-3 max-w-md text-fog">{f.body}</p>
                 {f.title === "Sagot Mo" && (
                   <Link
-                    href="/play"
-                    data-play-cta
+                    href="/play?from=feature"
+                    data-play-cta="feature"
                     className="kilig-glow-bg kilig-cta-shadow mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-plum transition active:scale-[0.98]"
                   >
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden>

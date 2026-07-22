@@ -12,8 +12,16 @@ export const metadata: Metadata = {
 };
 
 // The chooser. Driven by the episode registry, so a new episode shows up here
-// the moment it's added — nothing to hardcode.
-export default function PlayIndex() {
+// the moment it's added — nothing to hardcode. Forwards ?from= to the episode
+// links so entry-point attribution survives the chooser hop (e.g. the feature
+// card lands here, then play_start on the episode still knows source=feature).
+export default async function PlayIndex({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string }>;
+}) {
+  const { from } = await searchParams;
+  const fromQs = from ? `?from=${encodeURIComponent(from)}` : "";
   return (
     <main className="min-h-[100dvh] bg-plum px-5 py-10">
       <Track />
@@ -40,7 +48,7 @@ export default function PlayIndex() {
           {EPISODES.map((ep) => (
             <Link
               key={ep.slug}
-              href={`/play/${ep.slug}`}
+              href={`/play/${ep.slug}${fromQs}`}
               aria-label={`Laruin: ${ep.title}`}
               className="group relative block overflow-hidden rounded-3xl border border-plum-700 bg-plum-800/40 transition hover:border-rose/60"
             >
