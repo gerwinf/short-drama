@@ -275,6 +275,8 @@ export type TrackEventMeta = {
   reason?: string; // submit_error detail
   formVersion?: string; // form revision that produced the event — segments funnels
   plan?: string; // WTP price variant shown (ph | diaspora)
+  source?: string; // /play entry point (hero | tile | feature) — from ?from= on
+  //                  the launching link, since internal links carry no UTMs.
   email?: string; // captured signup email — set ONLY on WTP events (price_view /
   //                  reserve_click / reserve_skip), which fire after lead capture.
   //                  Lets the dashboard join anonymous price events back to the

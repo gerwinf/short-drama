@@ -45,9 +45,9 @@ const FEATURES = [
 // Premises with a playable episode get playHref — those tiles open the real
 // interactive player; the rest still open the teaser lightbox.
 const VIBE_CLIPS = [
-  { slug: "rich-boy", label: "Rich Boy Next Door", playHref: "/play/rich-boy" },
+  { slug: "rich-boy", label: "Rich Boy Next Door", playHref: "/play/rich-boy?from=tile" },
   { slug: "amnesia", label: "Amnesia Twist" },
-  { slug: "enemies", label: "Enemies-to-Lovers", playHref: "/play/enemies" },
+  { slug: "enemies", label: "Enemies-to-Lovers", playHref: "/play/enemies?from=tile" },
   { slug: "cinderella", label: "Cinderella Teleserye" },
 ];
 
@@ -129,8 +129,8 @@ export default function Home() {
           </p>
           <div className="mt-8">
             <Link
-              href="/play/rich-boy"
-              data-play-cta
+              href="/play/rich-boy?from=hero"
+              data-play-cta="hero"
               className="kilig-cta-shadow inline-flex items-center gap-2 rounded-full bg-rose px-8 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
             >
               ▶ Maging bida 💖
@@ -139,6 +139,14 @@ export default function Home() {
           <p className="mt-4 text-sm text-fog/80">
             ▶ 60 segundo · Libre · Ikaw ang pipili ng ending
           </p>
+          {/* Keep an email path above the fold: play is primary, but the Meta
+              campaign optimizes for the lead event, so never hide it entirely. */}
+          <button
+            data-kilig-open
+            className="mt-3 text-sm font-semibold text-rose underline-offset-4 hover:underline"
+          >
+            O mag-early access muna →
+          </button>
         </div>
 
         <div className="relative mx-auto flex w-full max-w-sm justify-center">
@@ -200,8 +208,8 @@ export default function Home() {
                 <p className="mt-3 max-w-md text-fog">{f.body}</p>
                 {f.title === "Sagot Mo" && (
                   <Link
-                    href="/play"
-                    data-play-cta
+                    href="/play?from=feature"
+                    data-play-cta="feature"
                     className="kilig-glow-bg kilig-cta-shadow mt-5 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-plum transition active:scale-[0.98]"
                   >
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
