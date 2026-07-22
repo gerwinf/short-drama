@@ -128,24 +128,30 @@ export default function Home() {
             kikiligin ka.
           </p>
           <div className="mt-8">
-            <Cta>Get early access — libre 💖</Cta>
+            <Link
+              href="/play/rich-boy"
+              data-play-cta
+              className="kilig-cta-shadow inline-flex items-center gap-2 rounded-full bg-rose px-8 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
+            >
+              ▶ Maging bida 💖
+            </Link>
           </div>
           <p className="mt-4 text-sm text-fog/80">
-            ⚡ 30 seconds lang · Libre · Mauna sa launch
+            ▶ 60 segundo · Libre · Ikaw ang pipili ng ending
           </p>
         </div>
 
         <div className="relative mx-auto flex w-full max-w-sm justify-center">
           <div className="absolute -left-2 top-10 w-1/2 rotate-[-8deg] opacity-80">
             <PhoneShot
-              src="/shots/01-onboarding-choose-your-kilig.jpg"
-              alt="Choose your first kilig onboarding screen"
+              src="/shots/02-player-kilig-meter.jpg"
+              alt="Kilig Meter player screen"
             />
           </div>
           <div className="relative z-10 w-3/4 animate-floaty md:w-4/5">
             <PhoneShot
-              src="/shots/04-share-card-ikaw-ang-bida.jpg"
-              alt="Ikaw ang Bida share card"
+              src="/shots/03-decision-sagot-mo.jpg"
+              alt="Sagot mo? decision screen — ikaw ang pipili ng ending"
               priority
             />
           </div>
