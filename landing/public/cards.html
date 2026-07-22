@@ -74,6 +74,7 @@
 </div>
 <script>
   const CARDS = {
+    // Kabanata 1 — "Nahuli mong may kabit ang asawa mo"
     a:{label:"Ang Matapang",
        quote:"Hinarap ko sila.",
        trait:"Hindi ako marunong magkunwaring okay. Kung masakit, harapin agad — kahit sa harap ng lahat."},
@@ -83,6 +84,16 @@
     c:{label:"Ang Madiskarte",
        quote:"Nag-ipon muna ako ng ebidensya.",
        trait:"Hindi ako padalos-dalos. Bago ang galaw, may plano — at hindi ako natatalo."},
+    // Kabanata 2 — "Ang Harap-Harapan" (buntis si Divine, may nag-li-live)
+    "2a":{label:"Ang Walang Takot",
+       quote:"Sinabi ko lahat — live.",
+       trait:"Ayokong may itinatago. Kung totoo, sasabihin ko — kahit nanonood ang buong mundo."},
+    "2b":{label:"Ang Marangal",
+       quote:"Lumabas ako nang taas-noo.",
+       trait:"Hindi ko kailangang sumigaw para manalo. Ang dangal ko, hindi nila mahahawakan."},
+    "2c":{label:"Ang Mahinahon",
+       quote:"Kinausap ko siya nang sarilinan.",
+       trait:"Hindi lahat ng laban para sa madla. Ang totoong lakas, tahimik."},
   };
   const key = (new URLSearchParams(location.search).get("c") || "a").toLowerCase();
   const c = CARDS[key] || CARDS.a;
