@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="tl">
+<head>
+<meta charset="utf-8">
+<title>Kilig share cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum:#2b0a1f; --plum-800:#3b0a1f; --plum-700:#5a1633;
+    --rose:#ff3d68; --cream:#f3e9ee; --fog:#c9b6c0; --gold:#ffb627;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--plum);
+    font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+    display:grid;place-items:center;
+  }
+  .card{
+    width:100vw;height:100vh;
+    background:
+      radial-gradient(70% 55% at 50% 0%, rgba(255,61,104,.28), transparent 70%),
+      linear-gradient(180deg,#3b0a1f 0%, #2b0a1f 100%);
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:7vh 7vw;position:relative;overflow:hidden;
+  }
+  .card::after{
+    content:"";position:absolute;inset:auto -20% -30% -20%;height:55%;
+    background:radial-gradient(50% 60% at 50% 100%, rgba(255,182,39,.16), transparent 70%);
+    pointer-events:none;
+  }
+  .wordmark{
+    font-family:Fraunces,Georgia,serif;font-weight:700;
+    color:var(--rose);font-size:clamp(20px,3.4vh,34px);letter-spacing:-.01em;
+  }
+  .label{
+    color:var(--gold);font-weight:700;
+    font-size:clamp(12px,1.9vh,20px);letter-spacing:.22em;text-transform:uppercase;
+    margin-bottom:2.2vh;
+  }
+  .quote{
+    font-family:Fraunces,Georgia,serif;font-weight:700;color:var(--cream);
+    font-size:clamp(38px,8.6vh,86px);line-height:1.02;letter-spacing:-.02em;
+  }
+  .trait{
+    color:var(--fog);font-size:clamp(15px,2.5vh,26px);line-height:1.5;
+    margin-top:3vh;max-width:22ch;
+  }
+  .foot{position:relative;z-index:1}
+  .ask{
+    color:var(--cream);font-weight:700;
+    font-size:clamp(16px,2.7vh,28px);margin-bottom:1vh;
+  }
+  .url{color:var(--fog);font-size:clamp(12px,1.9vh,20px);letter-spacing:.02em}
+  .rule{height:3px;width:12vh;background:linear-gradient(90deg,var(--rose),var(--gold));
+    border-radius:99px;margin-bottom:3vh}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="wordmark">kilig</div>
+  <div style="position:relative;z-index:1">
+    <div class="rule"></div>
+    <div class="label" id="label"></div>
+    <div class="quote" id="quote"></div>
+    <div class="trait" id="trait"></div>
+  </div>
+  <div class="foot">
+    <div class="ask">Ikaw, ano'ng gagawin mo?</div>
+    <div class="url">kilig.nueve.club</div>
+  </div>
+</div>
+<script>
+  const CARDS = {
+    a:{label:"Ang Matapang",
+       quote:"Hinarap ko sila.",
+       trait:"Hindi ako marunong magkunwaring okay. Kung masakit, harapin agad — kahit sa harap ng lahat."},
+    b:{label:"Ang Marangal",
+       quote:"Umalis ako nang tahimik.",
+       trait:"Hindi lahat ng laban kailangang ipaglaban. Minsan, ang paglayo ang pinakamatapang na sagot."},
+    c:{label:"Ang Madiskarte",
+       quote:"Nag-ipon muna ako ng ebidensya.",
+       trait:"Hindi ako padalos-dalos. Bago ang galaw, may plano — at hindi ako natatalo."},
+  };
+  const key = (new URLSearchParams(location.search).get("c") || "a").toLowerCase();
+  const c = CARDS[key] || CARDS.a;
+  document.getElementById("label").textContent = c.label;
+  document.getElementById("quote").textContent = c.quote;
+  document.getElementById("trait").textContent = c.trait;
+</script>
+</body>
+</html>
