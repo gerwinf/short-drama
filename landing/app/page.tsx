@@ -61,11 +61,35 @@ function PhoneShot({
   src,
   alt,
   priority = false,
+  cropRatio,
 }: {
   src: string;
   alt: string;
   priority?: boolean;
+  // Some /shots are device mockups rendered on a black canvas with a margin
+  // around the phone. Passing the phone's own width/height ratio (e.g.
+  // "529 / 1094", measured from the source) crops that margin via object-cover,
+  // so the rounded corners + phone-shadow glow hug the phone instead of tracing
+  // the larger black rectangle behind it.
+  cropRatio?: string;
 }) {
+  if (cropRatio) {
+    return (
+      <div
+        className="phone-shadow relative w-full overflow-hidden rounded-[1.6rem]"
+        style={{ aspectRatio: cropRatio }}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes="(max-width: 640px) 70vw, 340px"
+          className="object-cover object-center"
+        />
+      </div>
+    );
+  }
   return (
     <Image
       src={src}
@@ -161,6 +185,7 @@ export default function Home() {
               src="/shots/03-decision-sagot-mo.jpg"
               alt="Sagot mo? decision screen — ikaw ang pipili ng ending"
               priority
+              cropRatio="529 / 1094"
             />
           </div>
         </div>
