@@ -113,7 +113,7 @@ export const richBoy: Story = {
         objectPosition: "center 45%",
       },
       caption: "“Lumayo ka sa anak ko.”",
-      sub: "— Doña Isabel, ina ni Mateo.",
+      sub: "Si Doña Isabel — ina ni Mateo. May alam siyang hindi mo alam.",
       kiligBump: 10,
       choice: {
         prompt: "Sasagutin mo ba siya?",
@@ -151,7 +151,8 @@ export const richBoy: Story = {
       ending: {
         key: "bold",
         title: "Ikaw ang Bida",
-        line: "“Ako ang pipili ng mamahalin ko.” Natigilan si Doña Isabel.",
+        // #2 — she drives it. The title means she leads, not that she's chosen.
+        line: "Tumindig ka. “Hindi mo ako matatakot palayo.”",
         otherPath: "May bersyon kung saan tahimik kang umalis — at siya ang humabol.",
       },
     },
@@ -177,17 +178,19 @@ export const richBoy: Story = {
     "ending-twist": {
       id: "ending-twist",
       media: {
-        // Neon-noir grade is baked in — leave it ungraded.
         type: "image",
-        src: "/play/scene-ending-twist.jpg",
+        src: "/play/scene-dona-young.jpg",
         kenBurns: "in",
-        objectPosition: "center 45%",
+        mood: "romantic",
+        objectPosition: "center 35%",
       },
       kiligBump: 25,
       ending: {
         key: "twist",
+        // #1 — the mirror: the matriarch was once the girl at the gate. Subverts
+        // the genre's most tired beat (evil mother) into a warning about herself.
         title: "Itutuloy…",
-        line: "Hindi pala basta kapitbahay ang lola mo sa mga Villaluna.",
+        line: "Si Doña Isabel — dati ring batang babae sa tapat ng gate. Ikaw kaya?",
         otherPath: "Dalawang landas ang hindi mo pinili. Balikan.",
       },
     },
