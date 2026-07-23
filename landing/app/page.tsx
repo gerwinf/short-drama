@@ -151,26 +151,29 @@ export default function Home() {
             telenovela × K-drama. Ikaw ang pipili ng mangyayari. Promise,
             kikiligin ka.
           </p>
+          {/* Email capture is the primary hero action: the Meta campaign
+              optimizes for the lead event, and play-driven traffic deep-links
+              straight into /play (bypassing the hero), so the people who see
+              this are mostly paid + brand traffic we want to convert to leads.
+              Play stays one tap away as a secondary link into the chooser. */}
           <div className="mt-8">
-            <Link
-              href="/play/rich-boy?from=hero"
-              data-play-cta="hero"
+            <button
+              data-kilig-open
               className="kilig-cta-shadow inline-flex items-center gap-2 rounded-full bg-rose px-8 py-4 text-lg font-semibold text-white transition active:scale-[0.98]"
             >
-              ▶ Maging bida 💖
+              Get early access — libre
+            </button>
+            <p className="mt-3 text-sm text-fog/80">
+              ⚡ 30 segundo · Libre · Mauna sa launch
+            </p>
+            <Link
+              href="/play?from=hero"
+              data-play-cta="hero"
+              className="mt-3 inline-block text-sm font-semibold text-cream underline underline-offset-4 transition hover:text-rose"
+            >
+              Laruin ang isang eksena →
             </Link>
           </div>
-          <p className="mt-4 text-sm text-fog/80">
-            ▶ 60 segundo · Libre · Ikaw ang pipili ng ending
-          </p>
-          {/* Keep an email path above the fold: play is primary, but the Meta
-              campaign optimizes for the lead event, so never hide it entirely. */}
-          <button
-            data-kilig-open
-            className="mt-3 text-sm font-semibold text-rose underline-offset-4 hover:underline"
-          >
-            O mag-early access muna →
-          </button>
         </div>
 
         <div className="relative mx-auto flex w-full max-w-sm justify-center">
