@@ -95,8 +95,11 @@ export default function EndingCard({
         )}
 
         <div className="flex flex-col gap-3">
+          {/* Compact: the player already engaged, so skip the onboarding quiz
+              and go straight to location → email → the WTP gate. */}
           <button
             data-kilig-open
+            data-kilig-compact
             className="kilig-glow-bg kilig-cta-shadow w-full rounded-full py-3.5 text-center font-bold text-white active:scale-[0.98]"
           >
             Makakuha ng early access — libre
