@@ -57,7 +57,7 @@ export const enemies: Story = {
         objectPosition: "center 45%",
       },
       caption: "Anim na buwan. Iisang promotion.",
-      sub: "“May blind date ka mamaya,” sabi ng barkada.",
+      sub: "Barkada: “Blind date mo 8PM. 'Wag kang aatras 😌”",
       kiligBump: 10,
       advanceMs: 6500,
       defaultNext: "reveal",
@@ -114,7 +114,7 @@ export const enemies: Story = {
         objectPosition: "center 50%",
       },
       caption: "Dalawang oras na tawanan.",
-      sub: "May hindi pala siya sinasabi sa opisina.",
+      sub: "“I'll fix it. 'Wag kang mag-alala,” sa telepono niya.",
       kiligBump: 16,
       advanceMs: 6500,
       defaultNext: "stakes",
@@ -160,7 +160,7 @@ export const enemies: Story = {
         objectPosition: "center 50%",
       },
       caption: "Nasa kamay mo ang ikakatalo niya.",
-      sub: "Bukas ang announcement ng promotion.",
+      sub: "Kaya mong manalo ngayon — pero ganito ba?",
       kiligBump: 12,
       choice: {
         prompt: "Ano'ng gagawin mo sa report?",
@@ -214,7 +214,9 @@ export const enemies: Story = {
       ending: {
         key: "sweet",
         title: "Sa Ulan",
-        line: "“Bakit mo 'ko iniligtas?” Hindi mo siya sinagot.",
+        // The differentiator: mutual, simultaneous sacrifice. She saved him;
+        // he'd already stepped aside for her. (See sa-ulan-screenplay.md.)
+        line: "Iniligtas mo siya. Inurong din niya ang laban — para sa'yo.",
         otherPath: "May bersyon kung saan ipinasa mo ang report. Mas malamig.",
       },
     },
@@ -231,7 +233,7 @@ export const enemies: Story = {
       ending: {
         key: "twist",
         title: "Itutuloy…",
-        line: "Inurong niya ang application niya — noong gabi pa ng date.",
+        line: "Inurong niya ang application niya — 9:47 PM, gabi ng date.",
         otherPath: "Dalawang landas ang hindi mo pinili. Balikan.",
       },
     },
