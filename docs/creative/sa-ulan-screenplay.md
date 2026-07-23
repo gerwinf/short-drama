@@ -118,3 +118,44 @@ Foreheads together. She laughs through the rain. City glowing behind them.
 - Music + rain SFX, one title card, one edit/assembly pass.
 
 **Recommendation:** run Phase 0 first (~20s proof, small spend), eyeball whether AI video of the two leads holds, decide from there.
+
+---
+
+## Production log (2026-07-23) — SHIPPED as `Marketing Assets/sa-ulan/sa-ulan-v3.mp4`
+
+84s cut, ~320 credits total. All phases complete: 12 generated clips + 5 HTML
+props (title, tag, barkada chat, HR lock-screen, incident-report cover,
+withdrawal letter) + reused `enemies.mp4` cold open + ffmpeg assembly with
+burned ASS subs. Still pending: music pass (CapCut, library track).
+
+### CONTINUITY RULES — read before generating ANY Kilig video
+
+Higgsfield elements lock **faces only**. Clothes, venue, and props re-roll on
+every generation. The v1 cut shipped with Rafa in three outfits at one dinner
+and Jaz's suit vanishing mid-scene. Rules learned:
+
+1. **Every prompt in a scene carries the same continuity block**, verbatim:
+   wardrobe per character ("plain BLACK button-down, NO jacket") + venue
+   ("moody upscale interior, floor-to-ceiling city windows, single candle").
+2. **Wardrobe anchor = the finale.** Lock every character's outfit to whatever
+   the emotionally-critical closing shots use, then force it backwards through
+   the day's scenes. (Here: Jaz cream v-neck, Rafa black button-down.)
+3. **Never AI-generate readable documents/screens.** Long text garbles
+   ("Resgnation"). Render props as HTML → headless-Chrome screenshot →
+   ken-burns in the edit. Short all-caps ("INCIDENT REPORT") survives AI, but
+   HTML is free and pixel-perfect. Props also carry world consistency
+   (Meridian branding, the 7:43→9:12→9:47 timeline) better than any gen.
+4. **Screens are the cheapest story glue.** Chat/lock-screen inserts fixed
+   every causality gap (blind-date setup, whose report, why he's texting) for
+   zero credits. Cut spectacle, never causality.
+5. Negative genre hints matter: `comedy` genre produced giggles on a hostile
+   beat; use `drama` + explicit "no smiling, no laughing".
+
+### Known remaining defect (fix on credit refresh, 22.5 cr)
+
+**S3a menu-standoff: Rafa wears a denim jacket** (should be the black
+button-down; the suit at P2 arrival is fine — reads as dressed-for-date,
+blazer off at table). Regen prompt is in the session log; add the continuity
+block above. Minor accepted drift: restaurant interior varies across the three
+dinner shots; office furniture differs night vs morning; envelope handwriting
+vs printed label.
