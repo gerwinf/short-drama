@@ -15,6 +15,10 @@ import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
 const TOTAL_STEPS = QUESTIONS.length + 2; // questions + vibe-matched verdict + email
 
+// Compact-mode flow (opened from a play ending): the only quiz answer we keep is
+// location, because the WTP price plan depends on it (PH ₱149 vs diaspora $9.99).
+const LOCATION_Q = QUESTIONS.find((q) => q.id === "location")!;
+
 // Fire-and-forget funnel event. keepalive lets it survive an unloading page
 // (e.g. the "close" event when the user dismisses the modal or leaves).
 // Every event carries formVersion so the dashboard can segment funnels by form
@@ -40,6 +44,8 @@ export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  // Compact = opened from a play ending → skip onboarding, go location → email.
+  const [compact, setCompact] = useState(false);
   // null = price gate not yet answered; true/false = reserved / skipped.
   const [reserved, setReserved] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,12 +61,14 @@ export default function SignupForm() {
     return PRICE_PLANS[resolvePlan(priceParam, answers.location)] ?? PRICE_PLANS.ph;
   }, [answers.location]);
 
-  const openModal = useCallback(() => {
+  const openModal = useCallback((compactMode = false) => {
+    setCompact(compactMode);
+    setStep(0); // each open starts a fresh funnel (flows differ by mode)
     setOpen(true);
     if (!openTracked.current) {
       openTracked.current = true;
       fbqCustom("FormOpen"); // Meta custom event: funnel step
-      track("open");
+      track("open", compactMode ? { value: "compact" } : undefined);
     }
   }, []);
 
@@ -71,7 +79,8 @@ export default function SignupForm() {
       const target = (e.target as HTMLElement)?.closest("[data-kilig-open]");
       if (target) {
         e.preventDefault();
-        openModal();
+        // data-kilig-compact (the play-ending CTA) → short location→email flow.
+        openModal(target.hasAttribute("data-kilig-compact"));
       }
     };
     document.addEventListener("click", handler);
@@ -142,14 +151,18 @@ export default function SignupForm() {
 
   if (!open) return null;
 
-  const progress = done ? 100 : Math.round((step / TOTAL_STEPS) * 100);
-  const isEmailStep = step === TOTAL_STEPS - 1;
+  // Compact flow is just location + email; full flow is the whole quiz.
+  const totalSteps = compact ? 2 : TOTAL_STEPS;
+  const progress = done ? 100 : Math.round((step / totalSteps) * 100);
+  const isEmailStep = step === totalSteps - 1;
   // The verdict step continues the story of whichever vibe they picked.
   const currentQuestion: Question | null = isEmailStep
     ? null
-    : step < QUESTIONS.length
-      ? QUESTIONS[step]
-      : (VERDICTS[answers.vibe] ?? VERDICTS.kabit);
+    : compact
+      ? LOCATION_Q
+      : step < QUESTIONS.length
+        ? QUESTIONS[step]
+        : (VERDICTS[answers.vibe] ?? VERDICTS.kabit);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center">
@@ -178,7 +191,7 @@ export default function SignupForm() {
               />
             </div>
             <p className="mt-2 text-xs text-fog">
-              {isEmailStep ? "Huling step na!" : `Step ${step + 1} of ${TOTAL_STEPS}`}
+              {isEmailStep ? "Huling step na!" : `Step ${step + 1} of ${totalSteps}`}
             </p>
           </div>
         )}
