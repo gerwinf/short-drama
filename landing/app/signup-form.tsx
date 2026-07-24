@@ -11,6 +11,7 @@ import {
   type Question,
 } from "@/lib/types";
 import { readUtm } from "@/lib/utm";
+import { isTestSession } from "@/lib/is-test";
 import { fbqTrack, fbqCustom } from "@/lib/fbq";
 
 const TOTAL_STEPS = QUESTIONS.length + 2; // questions + vibe-matched verdict + email
@@ -30,7 +31,7 @@ function track(type: string, meta?: Record<string, unknown>) {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       type,
-      meta: { formVersion: FORM_VERSION, ...meta },
+      meta: { formVersion: FORM_VERSION, test: isTestSession() || undefined, ...meta },
       utm: readUtm(),
     }),
     keepalive: true,
@@ -130,7 +131,11 @@ export default function SignupForm() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          answers: { ...answers, form_version: FORM_VERSION },
+          answers: {
+            ...answers,
+            form_version: FORM_VERSION,
+            ...(isTestSession() ? { _test: "1" } : {}),
+          },
           email: email.trim(),
           utm: readUtm(),
         }),
