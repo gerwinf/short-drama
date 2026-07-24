@@ -152,7 +152,15 @@ export default async function Dashboard() {
     );
   }
 
-  const [subs, events] = await Promise.all([getSubmissions(), getEvents()]);
+  const [allSubs, allEvents] = await Promise.all([
+    getSubmissions(),
+    getEvents(),
+  ]);
+  // Internal QA sessions (?test=1) stamp their events + signups so they never
+  // pollute the numbers. Filter them out once, up front — every downstream
+  // aggregation then counts real traffic only.
+  const events = allEvents.filter((e) => !e.meta?.test);
+  const subs = allSubs.filter((s) => s.answers._test !== "1");
   const views = events.filter((e) => e.type === "view").length;
   const opens = events.filter((e) => e.type === "open").length;
   const signups = subs.length;
@@ -267,10 +275,15 @@ export default async function Dashboard() {
     tile: "Vibe tile",
     feature: "Feature card (Sagot Mo)",
   };
+  // Entry point: the in-site surface (?from=) when present, else fall back to
+  // the off-site utm_source — otherwise FB deep-link traffic (which carries
+  // utm_* but no ?from=) hides in "direct" and the breakdown is unreadable.
   const playSourceRows = countBy(playStarts, (e) =>
     e.meta?.source
       ? SOURCE_LABELS[e.meta.source] ?? e.meta.source
-      : "(untagged / direct)",
+      : e.utm?.utm_source
+        ? `${e.utm.utm_source} (utm)`
+        : "(direct / untagged)",
   );
 
   return (

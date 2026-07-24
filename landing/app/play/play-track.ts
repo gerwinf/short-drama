@@ -1,4 +1,5 @@
 import { readUtm } from "@/lib/utm";
+import { isTestSession } from "@/lib/is-test";
 
 // The entry point that launched this play session, read from ?from= on the
 // player URL (hero | tile | feature). Internal links carry no UTMs, so without
@@ -22,7 +23,12 @@ export function playTrack(
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         type,
-        meta: { questionId: meta?.node, value: meta?.value, source: readSource() },
+        meta: {
+          questionId: meta?.node,
+          value: meta?.value,
+          source: readSource(),
+          test: isTestSession() || undefined,
+        },
         utm: readUtm(),
       }),
       keepalive: true,
