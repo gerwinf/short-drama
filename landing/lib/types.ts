@@ -266,7 +266,12 @@ export type TrackEventType =
   | "play_choice"
   | "play_ending"
   | "play_replay"
-  | "play_share";
+  | "play_share"
+  // Linear films (/watch, e.g. Sa Ulan): meta.questionId = film slug,
+  // meta.value = "complete" (watch-through) or the vote letter A/B/C.
+  | "watch_start"
+  | "watch_complete"
+  | "watch_vote";
 
 export type TrackEventMeta = {
   step?: number; // 1-based step index

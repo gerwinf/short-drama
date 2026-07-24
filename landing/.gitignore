@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Kilig validation data (local JSONL store)
 /data/
+
+# Local film previews — serve from a CDN in prod, never Vercel public/
+public/watch/*.mp4

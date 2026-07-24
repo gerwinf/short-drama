@@ -21,6 +21,9 @@ const ALLOWED_TYPES: TrackEventType[] = [
   "play_ending",
   "play_replay",
   "play_share",
+  "watch_start",
+  "watch_complete",
+  "watch_vote",
 ];
 
 // Keep meta small and typed — never trust arbitrary client payloads into jsonb.
