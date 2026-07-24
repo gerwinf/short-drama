@@ -29,6 +29,16 @@ export const KNOWN_BOUNCED = new Set([
   "santostordaangelina@yahoo.com",
   "jamebailm0102@icloud.com",
   "ahnnealcopra@gmail.com",
+  // Found 2026-07-23 in the full CSV — malformed addresses that pass the loose
+  // regex but bounce (bad domain, junk TLD, or local part ending in a dot).
+  "keeyah0708@gmaol.com",
+  "hataasceleste8@gmail.comm",
+  "exodusgeluca@yahoo.com.pj",
+  "richardranua@25gmail.com",
+  "ronalynviernesmarilao96@comm.ph",
+  "norabarbarona69@gma.facebook.com",
+  "lhyn.@gmail.com",
+  "merlyngotuman.@gmail.com",
 ]);
 
 // Near-misses for a real mail host — a typed slip, not a working domain.
@@ -50,6 +60,13 @@ const TYPO_DOMAINS = new Set([
   "hotmai.com",
   "outlok.com",
   "icloud.co",
+  // Added 2026-07-23 from the full-CSV audit.
+  "gmaol.com",
+  "gmail.comm",
+  "yahoo.com.pj",
+  "25gmail.com",
+  "comm.ph",
+  "gma.facebook.com",
 ]);
 
 export type Reach = "bounced" | "typo" | "ok";

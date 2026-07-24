@@ -77,11 +77,12 @@ const DENYLIST = new Set([
   "gerwin2@gmail.com",
 ]);
 
-// Stricter than a loose "has an @ and a dot" check: local part must start
-// alphanumeric, domain must be real-looking, TLD ≥2 letters, no trailing dot.
-// Catches the junk that made Resend 422 the whole batch (e.g. "x@gmail.com.").
+// Stricter than a loose "has an @ and a dot" check: local part must start AND
+// END alphanumeric (so "lhyn.@gmail.com" is rejected — Gmail bounces a local
+// part ending in a dot), domain must be real-looking, TLD ≥2 letters, no
+// trailing dot. Catches the junk that made Resend 422 the whole batch.
 export function isValidEmail(e: string): boolean {
-  return /^[a-z0-9][a-z0-9._%+-]*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/.test(
+  return /^[a-z0-9](?:[a-z0-9._%+-]*[a-z0-9])?@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/.test(
     e,
   );
 }
