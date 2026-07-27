@@ -260,6 +260,10 @@ export default async function Dashboard() {
   const utmRows = countBy(subs, (s) => s.utm.utm_source || "direct");
   const utmCampaignRows = countBy(subs, (s) => s.utm.utm_campaign || "(none)");
   const utmContentRows = countBy(subs, (s) => s.utm.utm_content || "(none)");
+  // In-site surface that produced the signup (watch = the film, play = the
+  // interactive player, landing = homepage/hero). Stamped on the submission at
+  // form-open time — see signup-form.tsx.
+  const signupSurfaceRows = countBy(subs, (s) => s.answers._source || "landing");
   const recent = [...subs].reverse();
 
   // Interactive player (/play) engagement + entry-point attribution. play_start
@@ -507,6 +511,11 @@ export default async function Dashboard() {
               )}
             />
           ))}
+          <Breakdown
+            title="Signup surface (film / player / landing)"
+            total={signups}
+            rows={signupSurfaceRows}
+          />
           <Breakdown title="Ad source (utm_source)" total={signups} rows={utmRows} />
           <Breakdown
             title="Which ad drove the signup (utm_content)"

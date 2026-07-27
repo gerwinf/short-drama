@@ -52,6 +52,10 @@ export default function SignupForm() {
   const [reserved, setReserved] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const openTracked = useRef(false);
+  // Which in-site surface opened the form (watch | play | landing), captured at
+  // open time so the dashboard can attribute signups to the film vs the player
+  // vs the homepage. Internal links carry no UTMs, so the URL path is the signal.
+  const openSourceRef = useRef("landing");
 
   // Which founding-member price to show. `?price=` wins (diaspora ad sets link
   // straight to the USD test), else inferred from the location answer.
@@ -64,6 +68,14 @@ export default function SignupForm() {
   }, [answers.location]);
 
   const openModal = useCallback((compactMode = false) => {
+    if (typeof window !== "undefined") {
+      const p = window.location.pathname;
+      openSourceRef.current = p.startsWith("/watch")
+        ? "watch"
+        : p.startsWith("/play")
+          ? "play"
+          : "landing";
+    }
     setCompact(compactMode);
     setStep(0); // each open starts a fresh funnel (flows differ by mode)
     setOpen(true);
@@ -135,6 +147,7 @@ export default function SignupForm() {
           answers: {
             ...answers,
             form_version: FORM_VERSION,
+            _source: openSourceRef.current, // in-site surface that opened the form
             ...(isTestSession() ? { _test: "1" } : {}),
           },
           email: email.trim(),
