@@ -168,6 +168,17 @@ export default function WatchPlayer({ film }: { film: Film }) {
                   Abangan mo.
                 </p>
                 <div className="mt-5 flex flex-col gap-3">
+                  {/* Acquisition hook: a cold viewer just watched + voted — the
+                      warmest moment to convert. data-kilig-compact opens the
+                      short location→email→WTP flow (SignupForm is mounted on
+                      this page, so no separate route needed). */}
+                  <button
+                    data-kilig-open
+                    data-kilig-compact
+                    className="kilig-cta-shadow rounded-full bg-rose px-6 py-3 text-sm font-semibold text-white transition active:scale-[0.98]"
+                  >
+                    Maging una pag-launch — early access 💖
+                  </button>
                   <button
                     onClick={share}
                     className="rounded-full border border-rose/60 px-6 py-3 text-sm font-semibold text-rose transition hover:bg-rose/10"
