@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
   FORM_VERSION,
   PRICE_PLANS,
@@ -433,21 +434,19 @@ function Success({
       </p>
       {/* Immediate reward: they just converted — hand them a finished film to
           watch (and vote on), which drops them straight into the story loop.
-          Gated on the film being live on a CDN (env set) so we never promise a
-          film that 404s. */}
-      {process.env.NEXT_PUBLIC_SA_ULAN_URL && (
+          The film ships from public/ now (see the .gitignore exception), so
+          it's always available — no CDN env gate. */}
         <div className="mt-6 rounded-2xl border border-rose/40 bg-rose/10 p-4">
           <p className="text-sm font-semibold text-cream">
             🎬 Habang wala pa ang launch, panoorin ang unang Kilig short:
           </p>
-          <a
+          <Link
             href="/watch/sa-ulan?from=signup"
             className="kilig-cta-shadow mt-3 inline-flex w-full items-center justify-center rounded-full bg-rose px-6 py-3 font-semibold text-white transition active:scale-[0.98]"
           >
             Panoorin ang “Sa Ulan” ▶
-          </a>
+          </Link>
         </div>
-      )}
 
       <p className="mt-6 text-sm text-fog">
         Gusto mong mauna ang barkada mo? I-share mo na 👀
