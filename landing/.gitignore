@@ -45,3 +45,7 @@ next-env.d.ts
 
 # Local film previews — serve from a CDN in prod, never Vercel public/
 public/watch/*.mp4
+# Exception: sa-ulan ships from public/ for now (no CDN yet). ~20MB, low
+# traffic — fine short-term. Move to a CDN + NEXT_PUBLIC_SA_ULAN_URL later and
+# drop this line. See app/watch/films.ts.
+!public/watch/sa-ulan.mp4
