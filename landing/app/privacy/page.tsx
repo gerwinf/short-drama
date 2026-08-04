@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   description:
     "How Kilig collects, uses, and protects your data — including signup answers, email, analytics, and the Meta Pixel — and how to request deletion.",
   alternates: { canonical: "/privacy" },
+  openGraph: {
+    title: "Privacy Policy — Kilig",
+    description:
+      "How Kilig collects, uses, and protects your data, and how to request deletion.",
+    url: "/privacy",
+    siteName: "Kilig",
+    type: "article",
+  },
 };
 
 const EFFECTIVE_DATE = "August 4, 2026";
