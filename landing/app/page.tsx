@@ -334,6 +334,14 @@ export default function Home() {
           © 2026 Kilig. Kokolektahin lang namin ang email at sagot mo para sa
           early access — walang spam, puwedeng mag-opt out anytime.
         </p>
+        <p className="mt-2 text-xs">
+          <a
+            href="/privacy"
+            className="text-fog/60 underline decoration-fog/30 underline-offset-2 transition hover:text-rose"
+          >
+            Privacy Policy
+          </a>
+        </p>
       </footer>
     </main>
   );
