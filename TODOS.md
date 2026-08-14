@@ -4,6 +4,13 @@ Deferred items from /office-hours + /plan-ceo-review (2026-07-10). Source docs:
 - Design doc: `~/.gstack/projects/short-drama/gerwf-unknown-design-20260710-200540.md`
 - CEO plan: `~/.gstack/projects/short-drama/ceo-plans/2026-07-10-kilig-evidence-sprint.md`
 
+## Validation-playbook check (2026-08-14)
+Full analysis: `docs/research/validation-playbook-check-2026-08-14.md`. Founder-supplied "sell → validate → build → scale" framework checked against repo state; 5 of 8 principles already holding, gaps are all in the money-and-conversation half.
+
+- [ ] **Founding pre-order (real money) for the reserved cohort** — when `reserve_click` count crosses a pre-registered threshold (write the number down BEFORE looking at the dashboard), send a one-shot broadcast (existing `/api/dashboard/broadcast`) offering a refundable founding pre-order via GCash/Maya link or Stripe Payment Link, to reserved emails only. Reserved → paid conversion becomes the strongest pre-production evidence, and the playbook's gate for Phase 2 spend.
+- [ ] **Interview 5 reservers** — the `reserve_click` emails are the named, highest-intent users the sprint went looking for. Short calls or async voice notes: why reserved, what they watched instead this week, what would make them cancel. Verbatims feed ad creative + Kabanata beats.
+- [ ] **Vote-data citation rule** — every next-Kabanata/next-episode production decision logs (one line in the production log) which `watch_vote` / `play_choice` / verdict data backed it. Prevents drift back to producing on instinct.
+
 ## Market feedback — Jules Jurado, Globe ecosystem (2026-07-14)
 Full analysis: `docs/research/reddit-story-scoreboard-2026-07-14.md` (also mirrored in `~/.gstack/projects/short-drama/`). Premise check: all 5 design-doc premises survive; premise 4 (async voting over in-video branching) got independent outside validation (Jules raised Bandersnatch + "interactive sells only if invested — dating sims, RPGs" unprompted).
 
