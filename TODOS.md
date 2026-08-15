@@ -10,29 +10,29 @@ Original source docs: design doc `docs/designs/kilig-design-doc.md`, CEO plan
 
 ## P0 — This week, no new spend (the evidence chain)
 
-- [ ] **(D1) Diaspora-segmented WTP funnel read — do FIRST.** Segment every
-  reserve/skip/price_view metric PH vs abroad in the dashboard (events carry the
-  location answer). Zero cost — reads data already collected. Its result steers
-  the interview guide (D2), the OFW ad cell gate (D8), and the GTM posture
-  (deep-dive break #1: if diaspora dominates, Kilig is a diaspora-first company).
-- [ ] **(D2+D3+D4) Interview 5 reservers, instrumented.** The `reserve_click`
-  emails are the named, highest-intent users the sprint went looking for. Short
-  calls or async voice notes. Guide must probe: why reserved, PH-vs-OFW segment,
-  faces-vs-dubs (would you watch this with AI faces? did you watch Linda
-  Walker?), coin-trap resentment, what would make them cancel. Use the
-  interview-insight capture template (verbatims, pain scores, surprises,
-  referral names — D3, unblocked from the 2026-07-10 deferral); verbatims feed
-  ad creative. Optional 2-minute mock-vote stills test at the end if time
-  allows (D4, directional only).
+- [ ] **(D1) Diaspora-segmented WTP funnel read — do FIRST.** *Build shipped
+  2026-08-15 (`a37a6f1`): dashboard now has a "By self-reported segment" card —
+  reserve rate by location answer with reachable-only rates per segment.*
+  Remaining founder action: deploy/open the dashboard, read the card, log the
+  result (one line here). Its result steers the interview guide (D2), the OFW
+  ad cell gate (D8), and the GTM posture (deep-dive break #1: if abroad
+  dominates, Kilig is a diaspora-first company).
+- [ ] **(D2+D3+D4) Interview 5 reservers, instrumented.** *Kit shipped
+  2026-08-15: `docs/research/reserver-interview-kit-2026-08-15.md` — outreach
+  drafts (PH Taglish + diaspora English), full guide (Linda Walker dubs probe,
+  AI-faces stills probe, indirect coin-trap probe), D3 capture template, D4
+  mock-vote tail, synthesis format.* Remaining founder action: export the
+  reserved list, send outreach, run 5 (overbook 7), write the synthesis page.
 - [ ] **(D5) Founding pre-order: pre-register the threshold NOW, prep the
-  rails.** Write down the `reserve_click` count that triggers the real-money
-  test BEFORE looking at the dashboard (same pre-registration discipline as the
-  sprint gates). Prep GCash/Maya + Stripe payment links so the one-shot
-  broadcast (existing `/api/dashboard/broadcast`) can fire the day the
-  threshold crosses: refundable founding pre-order, reserved emails only.
-  **Read reserved→paid conversion per segment, never blended.** This is the
-  strongest pre-production evidence the project can produce and the playbook
-  gate for Phase 2 spend.
+  rails.** *Pre-registration shipped 2026-08-15, written blind (author never
+  saw production numbers): `docs/designs/founding-preorder-preregistration.md`
+  — trigger ≥30 reachable reservations (≥10 in one segment) or the 2026-09-30
+  fallback; offer = refundable one-month deposit at the reserved price; pass
+  ≥15% blended / ≥20% single-segment; rails checklist + both email drafts.
+  Note: the Broadcast tool sends to ALL signups — the pre-order send is manual
+  to the reserved-only list.* Remaining founder action: adopt/adjust the
+  thresholds BEFORE opening the dashboard segment card (then they freeze),
+  create the GCash/Maya + Stripe links, test the refund path.
 
 ## P1 — Next 2 weeks
 
