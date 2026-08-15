@@ -4,6 +4,16 @@ Deferred items from /office-hours + /plan-ceo-review (2026-07-10). Source docs:
 - Design doc: `~/.gstack/projects/short-drama/gerwf-unknown-design-20260710-200540.md`
 - CEO plan: `~/.gstack/projects/short-drama/ceo-plans/2026-07-10-kilig-evidence-sprint.md`
 
+## Market deep-dive follow-ups (2026-08-15)
+Full analysis: `docs/research/market-deep-dive-2026-08-15.md` (raw corpus in `docs/research/market-corpus-2026-08-15/`). Blind spots found: honest billing, fandom participation, Tagalog originals factory, diaspora-first economics, on-platform ads don't monetize in PH. Investor-attack verdict: the wedge holds only as community + real faces + diaspora wallet — not as a content factory.
+
+- [ ] **DECIDE (founder): diaspora-first read of the WTP funnel** — segment reserve/skip PH vs abroad in the dashboard before the next spend decision; if diaspora dominates, promote the deferred OFW ad cell to the main test and add an OFW-POV creative variant.
+- [ ] **DECIDE (founder): human-faces casting moves up the critical path** — market data says photoreal AI = lowest WTP of any format; the pilot's lead faces must be human (AI stays top-of-funnel/previz). Approach C (creator partner) is the moat, not a Phase-2 detail.
+- [ ] **Partner-path conversations** — one exploratory chat each with Beetzee Play (₱1/ep GCash rails + Globe distribution, thin content pipeline) and VMX/Viva (audience, no vertical play); could replace the pilot's weakest dependency (PH production partner).
+- [ ] **Anti-coin-trap positioning test** — add "walang coin trap" honest-billing framing to the next creative round; blind spot 1 is unclaimed and free to occupy.
+- [ ] **Benchmark file** — pilot gates should reference iWant's "The Chambermaid's Daughter" (30 eps, first 5 free, ~5M FB views, ₱35 PH / $12.99 US), not only internal trailing averages.
+- [ ] **Watchlist (monthly)** — PineDrama/Melolo/FreeReels PH expansion; iWant vertical lineup cadence; Beetzee×Globe traction; AI Tagalog dub quality (when dubs stop being memes, the localization moat closes); any incumbent shipping community voting.
+
 ## Validation-playbook check (2026-08-14)
 Full analysis: `docs/research/validation-playbook-check-2026-08-14.md`. Founder-supplied "sell → validate → build → scale" framework checked against repo state; 5 of 8 principles already holding, gaps are all in the money-and-conversation half.
 
