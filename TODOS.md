@@ -10,13 +10,16 @@ Original source docs: design doc `docs/designs/kilig-design-doc.md`, CEO plan
 
 ## P0 — This week, no new spend (the evidence chain)
 
-- [ ] **(D1) Diaspora-segmented WTP funnel read — do FIRST.** *Build shipped
-  2026-08-15 (`a37a6f1`): dashboard now has a "By self-reported segment" card —
-  reserve rate by location answer with reachable-only rates per segment.*
-  Remaining founder action: deploy/open the dashboard, read the card, log the
-  result (one line here). Its result steers the interview guide (D2), the OFW
-  ad cell gate (D8), and the GTM posture (deep-dive break #1: if abroad
-  dominates, Kilig is a diaspora-first company).
+- [x] **(D1) Diaspora-segmented WTP funnel read — DONE 2026-08-15.** Result
+  (full read: `docs/research/d1-segment-read-2026-08-15.md`): **PH dominates —
+  44.9% reserve rate (35/78) vs diaspora 34.8% (8/23, underpowered);
+  reachable-only 37.9% holds vs 42.6% raw; 25 unique reachable reservers.**
+  Fake-door gates passed ×4.5 (PH) and ×7 (diaspora). Decisions: sachet/GCash
+  PH path leads; D8 OFW cell stays deferred (its gate didn't trigger);
+  diaspora money-read comes from the pre-order per-segment split. Unordered
+  finding: the converting persona is **35–60 Filipina daily short-drama
+  viewer** (71.9% are 35+), not the doc's 18–34 — persona correction logged
+  in P2. Segment card (`a37a6f1`) still needs a deploy to show in prod.
 - [ ] **(D2+D3+D4) Interview 5 reservers, instrumented.** *Kit shipped
   2026-08-15: `docs/research/reserver-interview-kit-2026-08-15.md` — outreach
   drafts (PH Taglish + diaspora English), full guide (Linda Walker dubs probe,
@@ -30,9 +33,15 @@ Original source docs: design doc `docs/designs/kilig-design-doc.md`, CEO plan
   fallback; offer = refundable one-month deposit at the reserved price; pass
   ≥15% blended / ≥20% single-segment; rails checklist + both email drafts.
   Note: the Broadcast tool sends to ALL signups — the pre-order send is manual
-  to the reserved-only list.* Remaining founder action: adopt/adjust the
-  thresholds BEFORE opening the dashboard segment card (then they freeze),
-  create the GCash/Maya + Stripe links, test the refund path.
+  to the reserved-only list.* **Trigger status 2026-08-15 (see D1 read §D5):
+  25 reachable reservers < 30 primary trigger, and paid traffic stopped
+  ~Jul 27 so the count is static. FOUNDER DECISION: (A, recommended) invoke
+  the ≥15 fallback early — send now, labeled directional, deviation logged
+  openly; or (B) restart a small PH push (~$50–100) to cross 30 as written.
+  Send-list filters are mandatory either way: dedup by email, collapse the
+  aquarian0216 alias cluster, exclude under-18 reservers from any payment
+  ask (~20–22 PH + ~4–5 diaspora sendable).** Rails prep unchanged: GCash/Maya
+  + Stripe links, refund path test.
 
 ## P1 — Next 2 weeks
 
@@ -56,11 +65,18 @@ Original source docs: design doc `docs/designs/kilig-design-doc.md`, CEO plan
 
 ## P2 — Gated on P0 reads / next natural trigger
 
-- [ ] **(D8) OFW third ad cell — gate REWRITTEN.** Same creatives, OFW-heavy
-  geos (UAE, Saudi, HK, Singapore), +$150–200. Old unblock ("PH sprint cells
-  pass") superseded: runs if and when the D1 read shows diaspora-dominant
-  reserve rates. If PH dominates, stays deferred. If promoted, add an OFW-POV
-  story variant (longing-for-home register) to the creative round.
+- [ ] **(D8) OFW third ad cell — gate READ 2026-08-15: stays deferred.** The
+  D1 read shows PH-dominant reserve rates (44.9% vs 34.8% underpowered), so
+  the promotion condition did not trigger. Next re-read: the pre-order's
+  per-segment reserved→paid split (only the PH segment will be gate-grade,
+  diaspora n<10). If diaspora *pays* disproportionately, this cell promotes.
+- [ ] **Persona correction (from D1, 2026-08-15):** the converting audience is
+  **women 35–60** (71.9% of signups are 35+, 45.1% are 45+, 72.3% female,
+  52.2% daily short-drama-app users) — not the design doc's 18–34. Update
+  design-doc §Target User + pilot casting/story POV + ad targeting; expect
+  voice-note interviews to fit this cohort better than video calls. Creative
+  note for D10/D11: the ad-03-bold-statement family drove ~58% of attributed
+  signups — iterate there, not on the tail.
 - [ ] **(D10+D11) Next creative round, when one runs:** add the
   anti-coin-trap/honest-billing framing ("walang coin trap" — blind spot 1,
   unclaimed) and keep the 2026-07-14 refinements: interactive-hook end-cards as
