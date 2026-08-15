@@ -118,3 +118,22 @@ thread, only to non-payers.
 Payers are not just data: they are the founding cohort. Whatever the
 outcome, every payer gets named recognition at launch (opening credits of
 the first season — "Founding Barkada") and refunds are honored forever.
+
+---
+
+## Decision log
+
+**2026-08-15 — Option A invoked (founder decision): fallback triggered early.**
+State at decision time: 25 unique reachable reservers (< 30 primary trigger);
+paid traffic stopped ~Jul 27, so the count was static and the primary trigger
+unreachable without new spend. The ≥15 fallback count was already satisfied;
+only its date (2026-09-30) was pulled forward, on the argument that lead decay
+strictly worsens the read with every waiting week. **The run is labeled
+DIRECTIONAL per the fallback's own terms.** Deviation logged here before any
+results exist. Pass bars unchanged (≥15% blended; ≥20% single-segment n≥10 —
+only the PH segment is gate-grade this run, diaspora n<10 is directional
+inside a directional run). Send-list filters applied per the D1 read: dedup
+by email, aquarian0216 alias cluster excluded, under-18 reservers excluded
+from the payment ask → 17 PH + 4 diaspora sendable (1 diaspora flagged
+dubious). Cadence from send day: day-7 one-line reminder to non-payers,
+day-14 read, log payments in the ledger CSV as they arrive.
