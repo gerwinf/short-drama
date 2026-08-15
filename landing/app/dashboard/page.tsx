@@ -230,6 +230,38 @@ export default async function Dashboard() {
   // not just the aggregate rate above. Joins price events to signups by email.
   const wtp = wtpByEmail(events);
 
+  // Segment read (CEO review 2026-08-15, D1): reserve rate by the user's
+  // SELF-REPORTED location answer, not the price variant shown — ?price= can
+  // override the variant, so the per-plan card above can't answer "which
+  // segment carries the willingness-to-pay signal". Joined signup → WTP by
+  // email; reachable-only recomputed per segment because a fake email in a
+  // small segment distorts its rate far more than the blended one.
+  const SEGMENTS = [
+    { id: "ph", label: "Sa Pilipinas" },
+    { id: "ofw", label: "Abroad — OFW / Fil-expat" },
+    { id: "other", label: "Abroad — other" },
+  ];
+  const segmentRows = SEGMENTS.map((seg) => {
+    const segSubs = subs.filter((s) => s.answers.location === seg.id);
+    let saw = 0;
+    let reserved = 0;
+    let segSawOk = 0;
+    let segResOk = 0;
+    for (const s of segSubs) {
+      const w = wtpFor(wtp, s.email);
+      if (!w) continue;
+      saw++;
+      const reachable = !isUnreachable(s.email);
+      if (reachable) segSawOk++;
+      if (w.status === "reserved") {
+        reserved++;
+        if (reachable) segResOk++;
+      }
+    }
+    return { ...seg, signups: segSubs.length, saw, reserved, segSawOk, segResOk };
+  });
+  const noLocationSubs = subs.filter((s) => !s.answers.location).length;
+
   // Lead reachability + WTP integrity. 15 of the first 100 emails hard-bounced
   // (fabricated/mistyped addresses — the quiz never verifies email). An
   // unreachable address is a fake lead, so it inflates BOTH the signup count
@@ -405,6 +437,60 @@ export default async function Dashboard() {
             The signal free signups can’t give. Below the pass bar, the audience
             likes it free but won’t pay — a red flag worth catching before
             production spend.
+          </p>
+        </div>
+
+        {/* D1 segment read — which segment carries the WTP signal? */}
+        <div className="mt-4 rounded-2xl border border-plum-700 bg-plum-800/40 p-5">
+          <p className="text-sm font-semibold text-cream">
+            By self-reported segment — the D1 read
+          </p>
+          <p className="mt-1 text-xs text-fog/70">
+            Location answer joined to WTP events by email (the card above reads
+            the price variant <em>shown</em>, which ?price= can override).
+          </p>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[520px] text-left text-sm">
+              <thead className="text-fog/70">
+                <tr>
+                  <th className="py-1 pr-4 font-medium">Segment</th>
+                  <th className="py-1 pr-4 font-medium">Signups</th>
+                  <th className="py-1 pr-4 font-medium">Reserved / saw price</th>
+                  <th className="py-1 pr-4 font-medium">Rate</th>
+                  <th className="py-1 font-medium">Reachable-only</th>
+                </tr>
+              </thead>
+              <tbody>
+                {segmentRows.map((r) => (
+                  <tr key={r.id} className="border-t border-plum-800">
+                    <td className="py-2 pr-4 text-fog">{r.label}</td>
+                    <td className="py-2 pr-4 text-cream">{r.signups}</td>
+                    <td className="py-2 pr-4 text-cream">
+                      {r.reserved}/{r.saw}
+                    </td>
+                    <td className="py-2 pr-4 font-semibold text-cream">
+                      {pct(r.reserved, r.saw)}
+                    </td>
+                    <td className="py-2 text-cream">
+                      {r.segResOk}/{r.segSawOk} · {pct(r.segResOk, r.segSawOk)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs text-fog/70">
+            The load-bearing question (TODOS P0): who pays, and from which
+            segment? If the abroad rows dominate the reachable-only rate, Kilig
+            reads diaspora-first — promote the OFW ad cell (D8) and add an
+            OFW-POV creative. If PH dominates, the sachet/GCash path leads.
+            {noLocationSubs > 0 && (
+              <>
+                {" "}
+                {noLocationSubs} signup(s) have no location answer and are
+                excluded.
+              </>
+            )}
           </p>
         </div>
 
