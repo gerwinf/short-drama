@@ -260,6 +260,13 @@ export type TrackEventType =
   | "price_view"
   | "reserve_click"
   | "reserve_skip"
+  // Real-money escalation (2026-08-30): the founding pre-order moved in-funnel
+  // after the email round converted 0/21 (Gmail BCC deliverability + FB-native
+  // audience). Fired on the Success screen's payment step; meta.plan /
+  // meta.value / meta.email as on WTP events. preorder_click = tapped through
+  // to the payment link; actual payments are read in Stripe/GCash, not here.
+  | "preorder_view"
+  | "preorder_click"
   // Interactive player (/play): meta.questionId = node id, meta.value = choice
   // label / ending key.
   | "play_start"

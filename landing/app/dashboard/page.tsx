@@ -217,6 +217,13 @@ export default async function Dashboard() {
   // so PH-mass and diaspora ARPU theses are read separately.
   const priceViews = events.filter((e) => e.type === "price_view");
   const reserves = events.filter((e) => e.type === "reserve_click");
+  // In-funnel pre-order step (2026-08-30): reserved → shown the payment CTA →
+  // tapped through. Actual payments are read in Stripe/GCash + the ledger CSV;
+  // these two only measure the funnel up to the handoff.
+  const preorderViews = events.filter((e) => e.type === "preorder_view").length;
+  const preorderClicks = events.filter(
+    (e) => e.type === "preorder_click",
+  ).length;
   const wtpByPlan = [
     { id: "ph", label: "PH — ₱149/mo", bar: "≥8–10%" },
     { id: "diaspora", label: "Diaspora — $9.99/mo", bar: "≥5%" },
@@ -416,6 +423,16 @@ export default async function Dashboard() {
             label="Skipped"
             value={priceViews.length - reserves.length}
             hint="saw price, took free access"
+          />
+          <StatCard
+            label="Pre-order step shown"
+            value={preorderViews}
+            hint="reserved → saw the in-funnel payment CTA"
+          />
+          <StatCard
+            label="Pre-order clicks"
+            value={preorderClicks}
+            hint={`${pct(preorderClicks, preorderViews)} tapped through — payments live in Stripe/GCash + ledger`}
           />
         </div>
         <div className="mt-4 rounded-2xl border border-plum-700 bg-plum-800/40 p-5">

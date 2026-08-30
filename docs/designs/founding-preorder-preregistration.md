@@ -123,6 +123,31 @@ the first season — "Founding Barkada") and refunds are honored forever.
 
 ## Decision log
 
+**2026-08-30 — Email round result: 0/21 payments. Email retired as the
+conversion channel; campaign moved in-funnel.**
+Per the frozen bars this is a FAIL of the email-mediated test — logged as
+such, no goalpost moves. But the bars' own precondition ("computed on
+reachable, **delivered** emails") was unverifiable: the send was a BCC blast
+from a personal Gmail to cold Gmail inboxes with no open tracking, to an
+audience the D1 read shows is 35–60 and Facebook-native (their real inbox is
+Messenger; the email address was a quiz-completion artifact). Channel
+failure and demand failure are indistinguishable in this data, so the FAIL
+branch's own instruction applies: **re-scope the monetization test, not the
+thesis** — one channel-corrected retest, and it is the last.
+
+The re-scope: the payment step moves into the funnel at peak intent —
+reserve tap → Success screen shows the refundable-deposit CTA immediately
+(`preorder_view` / `preorder_click` events; `PreorderClick` Meta custom
+event for later ad optimization). Gated per plan on
+`NEXT_PUBLIC_PREORDER_DIASPORA_URL` (Stripe link exists) and
+`NEXT_PUBLIC_PREORDER_PH_URL` (GCash link still to be created — PH arm dark
+until then). **Bars unchanged in spirit, denominator restated:** paid ÷
+`preorder_view` ≥ 15% blended passes; PH segment ≥ 20% (n ≥ 10) is the GTM
+anchor. n accrues only with new traffic, so a small PH ad push (~$50–100,
+the original Option B) now serves both volume and the retest. Payments
+reconcile from Stripe/GCash dashboards into the ledger CSV against
+`preorder_click` events by email.
+
 **2026-08-15 — Option A invoked (founder decision): fallback triggered early.**
 State at decision time: 25 unique reachable reservers (< 30 primary trigger);
 paid traffic stopped ~Jul 27, so the count was static and the primary trigger

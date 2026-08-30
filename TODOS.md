@@ -33,15 +33,21 @@ Original source docs: design doc `docs/designs/kilig-design-doc.md`, CEO plan
   fallback; offer = refundable one-month deposit at the reserved price; pass
   ≥15% blended / ≥20% single-segment; rails checklist + both email drafts.
   Note: the Broadcast tool sends to ALL signups — the pre-order send is manual
-  to the reserved-only list.* **DECIDED 2026-08-15: Option A — fallback
-  invoked early (25 reachable reservers, traffic static since ~Jul 27); run
-  labeled DIRECTIONAL; deviation logged in the pre-registration's decision
-  log before results. Send list after mandatory filters: 17 PH + 4 diaspora
-  (1 flagged).** Remaining founder actions, in order: (1) create GCash/Maya
-  ₱149 + Stripe $9.99 links (collect email; test refund path with a ₱1/$0.50
-  self-refund); (2) send the two drafts to the filtered list, BCC batches;
-  (3) day-7 one-line reminder to non-payers; (4) day-14 read per segment,
-  logged here + in the ledger CSV.
+  to the reserved-only list.* **2026-08-30 UPDATE: email round converted 0/21
+  — logged as an email-channel FAIL in the pre-registration decision log
+  (delivery unverifiable: Gmail BCC, no open tracking, FB-native 35–60
+  audience). Email retired as the conversion channel; the campaign moved
+  IN-FUNNEL: reserve tap → Success screen now shows the refundable-deposit
+  payment CTA (`preorder_view`/`preorder_click` + Meta `PreorderClick`
+  event; dashboard cards added). Bars restated: paid ÷ preorder_view ≥15%
+  blended, PH ≥20% n≥10. This is the last retest — if in-funnel at peak
+  intent doesn't convert, that's a demand answer.** Founder actions:
+  (1) set `NEXT_PUBLIC_PREORDER_DIASPORA_URL` (the live Stripe link) in
+  Vercel; (2) create the GCash/Maya ₱149 link → `NEXT_PUBLIC_PREORDER_PH_URL`
+  (PH arm stays dark until set); (3) deploy; (4) restart a small PH ad push
+  (~$50–100, the original Option B) to feed the funnel; (5) reconcile
+  payments from Stripe/GCash into the ledger CSV against `preorder_click`
+  emails.
 
 ## P1 — Next 2 weeks
 

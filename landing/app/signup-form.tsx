@@ -409,6 +409,27 @@ function Success({
 }) {
   const [copied, setCopied] = useState(false);
 
+  // In-funnel founding pre-order (2026-08-30): reservers get the payment step
+  // right here, at peak intent — the email round converted 0/21 (Gmail BCC
+  // deliverability, FB-native audience), so email is retired as the
+  // conversion channel. Gated on the env URL per plan so it never renders a
+  // dead link; PH stays dark until the GCash link exists.
+  const preorderUrl =
+    plan.id === "diaspora"
+      ? process.env.NEXT_PUBLIC_PREORDER_DIASPORA_URL
+      : process.env.NEXT_PUBLIC_PREORDER_PH_URL;
+  const showPreorder = reserved && !!preorderUrl;
+  const preorderTracked = useRef(false);
+  useEffect(() => {
+    if (!showPreorder || preorderTracked.current) return;
+    preorderTracked.current = true;
+    track("preorder_view", {
+      plan: plan.id,
+      value: `${plan.symbol}${plan.amount}`,
+      email,
+    });
+  }, [showPreorder, plan, email]);
+
   async function share() {
     const url = window.location.origin;
     const text = "Ikaw ang bida sa sariling teleserye. Sali ka na sa Kilig! 💖";
@@ -445,6 +466,41 @@ function Success({
           </>
         )}
       </p>
+
+      {/* The real-money step: reserved → pay the refundable deposit now.
+          This is the founding pre-order campaign's conversion surface. */}
+      {showPreorder && (
+        <div className="mt-6 rounded-2xl border border-gold/60 bg-gold/10 p-4">
+          <p className="text-sm font-semibold text-cream">
+            {plan.id === "diaspora"
+              ? `Lock it in now: a one-time ${plan.symbol}${plan.amount} refundable deposit — it becomes your first month at launch.`
+              : `I-lock mo na ngayon: one-time ${plan.symbol}${plan.amount} refundable deposit — ito na rin ang unang buwan mo pag-launch.`}
+          </p>
+          <a
+            href={preorderUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              track("preorder_click", {
+                plan: plan.id,
+                value: `${plan.symbol}${plan.amount}`,
+                email,
+              });
+              fbqCustom("PreorderClick");
+            }}
+            className="kilig-cta-shadow mt-3 inline-flex w-full items-center justify-center rounded-full bg-rose px-6 py-3 font-semibold text-white transition active:scale-[0.98]"
+          >
+            {plan.id === "diaspora"
+              ? `Pay the deposit — ${plan.symbol}${plan.amount}`
+              : `Magbayad ng deposit — ${plan.symbol}${plan.amount}`}
+          </a>
+          <p className="mt-2 text-center text-xs text-fog/70">
+            {plan.id === "diaspora"
+              ? "Full refund any time before launch, no questions."
+              : "Full refund bago mag-launch, walang tanong."}
+          </p>
+        </div>
+      )}
       {/* Immediate reward: they just converted — hand them a finished film to
           watch (and vote on), which drops them straight into the story loop.
           The film ships from public/ now (see the .gitignore exception), so
