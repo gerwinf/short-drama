@@ -159,3 +159,17 @@ blazer off at table). Regen prompt is in the session log; add the continuity
 block above. Minor accepted drift: restaurant interior varies across the three
 dinner shots; office furniture differs night vs morning; envelope handwriting
 vs printed label.
+
+**→ REGEN DELIVERED 2026-09-07** (upgrade-plan Tier 1, item 1). Seedance 2.5,
+omni_reference with both cast images as `image_references`, 9:16 · 5s · 720p ·
+no audio · **32.5 cr** (planned 22.5 — the old estimate was a different
+model/config; 1080p would have been 45, declined to match the 720p cut).
+Full continuity block in-prompt (cream v-neck / black button-down NO jacket
+NO denim / candle + city-window venue), "no smiling, no laughing" per rule 5.
+Job `a8cc5123-8d6f-41ce-abfb-599b2d0dfa9e`; clip:
+`https://d8j0ntlcm91z4.cloudfront.net/user_3GJPZpDS8ylAi9hq6e7ESg7Vvqo/hf_20260907_105429_a8cc5123-8d6f-41ce-abfb-599b2d0dfa9e.mp4`
+Pending founder eyeball (wardrobe ✓? faces hold? no giggles?) → cut into the
+timeline with the music pass → ship `sa-ulan-v3.1.mp4`. Balance after:
+~1,082 cr. Note for future regens: elements-in-prompt (`<<<id>>>`) failed
+validation on seedance omni mode — pass element media ids explicitly as
+`image_references` instead.
